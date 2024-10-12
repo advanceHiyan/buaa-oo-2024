@@ -1,4 +1,4 @@
-import com.oocourse.library1.LibraryBookId;
+import com.oocourse.library2.LibraryBookId;
 
 import java.util.HashMap;
 
@@ -35,5 +35,9 @@ public class BookShelf {
 
     public boolean haveBook(LibraryBookId bookId) {
         return books.containsKey(bookId) && books.get(bookId) > 0;
+    }
+
+    public HashMap<LibraryBookId,Integer> getBooks() {
+        return books;
     }
 }

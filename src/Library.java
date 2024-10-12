@@ -1,18 +1,20 @@
-import com.oocourse.library1.LibraryBookId;
-import com.oocourse.library1.LibraryMoveInfo;
-import com.oocourse.library1.LibraryRequest;
+import com.oocourse.library2.LibraryBookId;
+import com.oocourse.library2.LibraryMoveInfo;
+import com.oocourse.library2.LibraryRequest;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static com.oocourse.library1.LibrarySystem.PRINTER;
+import static com.oocourse.library2.LibrarySystem.PRINTER;
 
 public class Library {
     private final BookShelf bookShelf;
     private final AppOffice appOffice;
     private final BroReOffice broReOffice;
     private final StudReqProcess frontDesk;
+    private final DriftCorner driftCorner;
+    private final BroCorner broCorner;
     private HashMap<String,LibraryRequest> needToDo;
     private ArrayList<LibraryMoveInfo> waitPrints;
 
@@ -23,6 +25,8 @@ public class Library {
         this.frontDesk = new StudReqProcess(this);
         this.needToDo = new HashMap<>();
         this.waitPrints = new ArrayList<>();
+        this.driftCorner = new DriftCorner();
+        this.broCorner = new BroCorner();
     }
 
     public void tidy(boolean isOpen,LocalDate localDate) {
@@ -30,13 +34,18 @@ public class Library {
         long newTime = localDate.toEpochDay();
         moveBroToShlf(broReOffice.tidyAndReturn());
         moveAppToShlf(appOffice.tidyAndReturn(isOpen,newTime));
+        moveCornerBro();
         moveShlfToApp(localDate,isOpen);
         PRINTER.move(localDate,waitPrints);
         needToDo.clear();
     }
 
     public void querie(LocalDate date, LibraryBookId bookId) {
-        PRINTER.info(date,bookId, bookShelf.querie(bookId));
+        if (bookId.isFormal()) {
+            PRINTER.info(date,bookId, bookShelf.querie(bookId));
+        } else {
+            PRINTER.info(date,bookId,driftCorner.queryCount(bookId));
+        }
     }
 
     public void moveShlfToApp(LocalDate nowDate,boolean isOpen) {
@@ -62,6 +71,23 @@ public class Library {
         }
     }
 
+    public void moveCornerBro() {
+        ArrayList<CornerBook> cb = broCorner.getBooks();
+        for (int i = 0;i < cb.size();i++) {
+            if (cb.get(i).getLentCount() >= 2) {
+                LibraryMoveInfo moveInfo = new LibraryMoveInfo(cb.get(i).getBookId(),"bro","bs");
+                waitPrints.add(moveInfo);
+                LibraryBookId bsBookId = cb.get(i).getBookId().toFormal();
+                bookShelf.addBook(bsBookId);
+            } else {
+                LibraryMoveInfo moveInfo = new LibraryMoveInfo(cb.get(i).getBookId(),"bro","bdc");
+                waitPrints.add(moveInfo);
+                driftCorner.addBook(cb.get(i).getBookId(),cb.get(i));
+            }
+        }
+        cb.clear();
+    }
+
     public void moveAppToShlf(ArrayList<LibraryBookId> bookIds) {
         for (int i = 0;i < bookIds.size();i++) {
             bookShelf.addBook(bookIds.get(i));
@@ -77,6 +103,15 @@ public class Library {
         }
         broReOffice.addBook(temp);
         return bookId;
+    }
+
+    public CornerBook moveCornerToBro(LibraryBookId bookId) {
+        CornerBook temp = driftCorner.getAndRemoveBook(bookId);
+        if (temp == null) {
+            return null; // reject
+        }
+        broCorner.addBook(temp);
+        return temp;
     }
 
     public void addNeedApp(LibraryRequest request) {
@@ -96,5 +131,17 @@ public class Library {
 
     public StudReqProcess getFrontDesk() {
         return frontDesk;
+    }
+
+    public DriftCorner getDriftCorner() {
+        return driftCorner;
+    }
+
+    public BookShelf getBookShelf() {
+        return bookShelf;
+    }
+
+    public BroCorner getBroCorner() {
+        return broCorner;
     }
 }
