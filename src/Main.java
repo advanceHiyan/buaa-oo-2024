@@ -1,33 +1,28 @@
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        MyJvm myJvm = new MyJvm();
-        System.out.println("Start JVM Garbage Collection Simulation.");
+        Controller.getInstance().initial();             //初始化
         Scanner scanner = new Scanner(System.in);
-        while (scanner.hasNext()) {
-            String operation = scanner.next();
-            if (operation.equals("CreateObject")) {
-                int count = scanner.nextInt();
-                myJvm.createObject(count);
-                System.out.println("Create " + count + " Objects.");
-            } else if (operation.equals("SetUnreferenced")) {
-                List<Integer> unrefList = new ArrayList<>();
-                while (scanner.hasNextInt()) {
-                    int id = scanner.nextInt();
-                    unrefList.add(id);
-                    System.out.println("Set id: " + id + " Unreferenced Object.");
-                }
-                myJvm.setUnreferenced(unrefList);
-            } else if (operation.equals("SnapShot")) {
-                myJvm.getSnapShot();
+        while (scanner.hasNext()) {                     //识别输入,处理指令
+            String command = scanner.next();
+            if ("end".equals(command)) {
+                break;
+            }
+            String guestName = scanner.next();
+            if ("checkIn".equals(command)) {
+                Controller.getInstance().ask2checkIn(guestName);
+            } else if ("checkOut".equals(command)) {
+                String roomId = scanner.next();
+                Controller.getInstance().ask2checkOut(guestName, Integer.parseInt(roomId));
+            } else if ("clean".equals(command)) {
+                String roomId =scanner.next();
+                Controller.getInstance().ask2clean(guestName, Integer.parseInt(roomId));
             } else {
-                System.err.println("Invalid operation.");
+                System.out.println("Rejected: unknown command!");
+                break;
             }
         }
-        scanner.close();
-        System.out.println("End of JVM Garbage Collection Simulation.");
+        Controller.getInstance().setEndTag();
     }
 }

@@ -1,0 +1,11 @@
+@startuml
+class Cleaner {
+- String workerId
+- String workerName
++ String getWorkerId()
++ String getWorkerName()
++ void cleanRoom(int)
+}
+
+
+@enduml

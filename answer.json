@@ -1,5 +1,19 @@
 {
-  "2": "ensures (\\forall int i; 1 <= i && i < size; compare(i, i/2) >= 0);",
-  "3-1": "@ ensures (\\forall int i; 1 <= i && i <= \\old(heap.size);\n      @          \\old(heap.elements[i].isReferenced()) ==>\n      @           (\\exists int j; 1 <= j && j <= size; heap.elements[j].equals(\\old(getElement(i)))));",
-  "3-2": " @ ensures (\\forall int i; 1 <= i && i <= \\old(heap.size);\n      @          !(\\old(heap.elements[i].isReferenced())) ==>\n      @           (\\forall int j; 1 <= j && j <= size;\n      @           !elements[j].equals(\\old(heap.elements[i]))));"
+    "1": [
+        "-ask2checkOut(String,int): void",
+        "+checkOut(int): void",
+        "-workerName: String",
+        "Dispatcher",
+        "finishClean",
+        "isCheckInOperation()"
+    ],
+    "2": [
+        "DIS_REC_CHECKIN_FAILED",
+        "replyCheckOut(request);",
+        "arrangeClean4CheckOut(request);",
+        "arrangeCleanOnly(Request request)",
+        "RoomState.OCCUPIED",
+        "RequestTag.DIS_CLE_CLEAN_CHECKOUT.equals(request.getRequestTag())"
+    ],
+    "3": "在软件开发中，高内聚和低耦合是两个重要的概念。高内聚指模块内部的元素相互关联紧密，各部分共同完成一个明确的任务或目标。低耦合则表示模块之间的联系较弱，彼此独立，一个模块的变化不会对其他模块造成太大的影响。\n\n高内聚和低耦合的设计原则有助于提高软件的可维护性、可扩展性和可重用性。高内聚降低了代码之间的依赖性，使得代码易于理解和修改。低耦合使得模块之间可以独立开发和测试，减少了系统出错的风险。\n\n在本次实验中，我们可以运用高内聚和低耦合的原则来设计和编写代码。通过将功能拆分成独立的模块，每个模块只关注自己的任务，尽量减少模块之间的依赖，可以提高代码的可读性和维护性。同时，我们可以通过定义清晰的接口和规范的通信方式，确保模块之间的通信简单明了，降低了出错的可能性。\n\n综上所述，高内聚和低耦合是软件开发中非常重要的设计原则。通过遵循这些原则，我们可以创建高质量、可维护和可扩展的软件系统。"
 }

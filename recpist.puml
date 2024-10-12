@@ -1,0 +1,16 @@
+@startuml
+class Receptionist {
+- String workerId
+- String workerName
+- Dispatcher dispatcher
++ String getWorkerId()
++ String getWorkerName()
++ void setDispatcher(Dispatcher)
++ void serve()
+- void ask2checkIn(String)
+- void ask2checkOut(String,int)
+- void ask2clean(int)
+}
+
+
+@enduml
