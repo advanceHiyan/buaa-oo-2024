@@ -1,0 +1,6 @@
+@startuml
+class Main {
++ {static} void main(String[])
+}
+
+@enduml

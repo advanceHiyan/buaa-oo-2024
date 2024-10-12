@@ -1,0 +1,17 @@
+@startuml
+class EleRequestCpu {
+- ElevatorThread elevator
+- RequestQueue requestQueue
+- ArrayList<NormalResetRequest> seeRequests
+- ArrayList<PersonRequest> inWantOuts
+- ArrayList<PersonRequest> personIns
+- int newSpeedTime
+- int newMaxNum
++ void checkEleRequest()
++ int getNewMaxNum()
++ int getNewSpeedTime()
++ ArrayList<PersonRequest> getInWantOuts()
+}
+
+
+@enduml

@@ -1,0 +1,38 @@
+@startuml
+class ElevatorThread {
+- RequestQueue elevatorQueue
+- int id
+- int nowFloor
+- int maxNum
+- boolean isOpen
+- boolean isMove
+- int isUpDoenNo
+- EleCpu cpu
+- EleRequestCpu elCpu
+- ArrayList<PersonRequest> inElevators
+- ArrayList<PersonRequest> specialNeeds
+- ReentrantLock lock
+- long timed
+- int speedTime
++ void run()
++ void over(DoubleCarResetRequest,DoubleReQueue)
++ void resetThis(int,int,ArrayList<PersonRequest>)
++ void fuckolds(ArrayList<PersonRequest>,DoubleReQueue)
++ void receiveAgainUp(ArrayList<PersonRequest>)
++ void OutAndIn(ArrayList<PersonRequest>,ArrayList<PersonRequest>)
++ long moveOneFloor()
++ void closeDoor()
++ boolean openDoor()
++ void outAperson(PersonRequest)
++ void trySleep(long)
++ int getNowFloor()
++ ArrayList<PersonRequest> getInElevators()
++ int getInNum()
++ int getMaxNum()
+}
+
+
+
+
+Thread <|-- ElevatorThread
+@enduml

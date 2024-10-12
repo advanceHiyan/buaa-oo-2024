@@ -1,0 +1,1 @@
+.\datainput_student_win64.exe | java -jar oohomework_2024_22371169_hw_7.jar

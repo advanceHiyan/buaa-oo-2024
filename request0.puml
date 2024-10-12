@@ -1,0 +1,45 @@
+@startuml
+class RequestQueue {
+- ArrayList<PersonRequest> requests
+- DoubleReQueue myQueue
+- boolean isEnd
+- ElevatorThread elevator
+- ArrayList<NormalResetRequest> setRequests
+- boolean canChange
+- int id
+- int dir
+- int floor
+- int balance
+- int speedTime
+- boolean needOver
+- DoubleCarResetRequest doubleCarResetRequest
++ <<Create>> RequestQueue(int)
++ void addRequest(Request)
++ void checkEle(ElevatorThread)
++ NormalResetRequest setGetAndRemove()
++ void removeRequest(PersonRequest)
++ ArrayList<PersonRequest> getRequests()
++ ArrayList<NormalResetRequest> getSets()
++ boolean getGlag()
++ void setEnd(boolean)
++ boolean isEnd()
++ boolean isEmpty()
++ int getDir()
++ int getFloor()
++ int getBalance()
++ int getSpeedTime()
++ void writeSomething(int,int,int,int)
++ void writeCanChange(boolean)
++ int getSize()
++ boolean isCanChange()
++ void makenewGG(DoubleCarResetRequest)
++ DoubleCarResetRequest getDoubleCarResetRequest()
++ boolean isNeedOver()
++ DoubleReQueue getMyQueue()
+}
+
+
+
+
+ReQueue <|.. RequestQueue
+@enduml

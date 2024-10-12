@@ -1,0 +1,12 @@
+@startuml
+class InputThread {
+- Waitqueue waitQueue
+- HashMap<Integer,ReQueue> elevatorQueues
++ void run()
+}
+
+
+
+
+Thread <|-- InputThread
+@enduml
