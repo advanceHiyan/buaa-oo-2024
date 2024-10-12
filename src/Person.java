@@ -1,4 +1,4 @@
-import com.oocourse.library2.LibraryBookId;
+import com.oocourse.library3.LibraryBookId;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -8,11 +8,13 @@ public class Person {
     private HashMap<LibraryBookId, BookOfPer> booksCtype;
     private BookOfPer bookBtype;
     private BookOfPer bookBu;
+    private int points;
 
     public Person(String id) {
         this.id = id;
         this.booksCtype = new HashMap<>();
         this.bookBtype = null;
+        this.points = 10;
     }
 
     public void addBook(LibraryBookId bookId,BookOfPer book) {
@@ -118,5 +120,39 @@ public class Person {
             System.out.println("no,can't get count because book is not u");
             return 0;
         }
+    }
+
+    public void changePoint(int point) {
+        this.points += point;
+    }
+
+    public boolean isEnoughPoint(LocalDate date) {
+        return this.getPoint(date) >= 0;
+    }
+
+    public int getPoint(LocalDate date) {
+        int qsc = this.points - this.getSubPoint(date);
+        if (qsc > 20) {
+            qsc = 20;
+        }
+        return qsc;
+    }
+
+    public int getSubPoint(LocalDate date) {
+        int ret = 0;
+        if (isHaveB() && !isOkOwn(bookBtype.getBookId(),date)) {
+            ret += 2;
+        }
+        if (isHaveBu() && !isOkOwn(bookBu.getBookId(),date)) {
+            ret += 2;
+        }
+        if (!booksCtype.isEmpty()) {
+            for (BookOfPer book : booksCtype.values()) {
+                if (!isOkOwn(book.getBookId(), date)) {
+                    ret += 2;
+                }
+            }
+        }
+        return ret;
     }
 }

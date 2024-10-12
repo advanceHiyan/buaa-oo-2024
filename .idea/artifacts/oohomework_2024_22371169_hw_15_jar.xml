@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="oohomework_2024_22371169_hw_15:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/oohomework_2024_22371169_hw_15_jar</output-path>
+    <root id="archive" name="oohomework_2024_22371169_hw_15.jar">
+      <element id="module-output" name="oohomework_2024_22371169_hw_15" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/library3.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

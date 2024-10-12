@@ -1,12 +1,12 @@
-import com.oocourse.library2.LibraryBookId;
-import com.oocourse.library2.LibraryMoveInfo;
-import com.oocourse.library2.LibraryRequest;
+import com.oocourse.library3.LibraryBookId;
+import com.oocourse.library3.LibraryMoveInfo;
+import com.oocourse.library3.LibraryRequest;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static com.oocourse.library2.LibrarySystem.PRINTER;
+import static com.oocourse.library3.LibrarySystem.PRINTER;
 
 public class Library {
     private final BookShelf bookShelf;
@@ -33,7 +33,8 @@ public class Library {
         waitPrints.clear();
         long newTime = localDate.toEpochDay();
         moveBroToShlf(broReOffice.tidyAndReturn());
-        moveAppToShlf(appOffice.tidyAndReturn(isOpen,newTime));
+        moveAppToShlf(appOffice.tidyAndReturn(isOpen,
+                newTime,frontDesk.getOrderIng(),frontDesk.getIdToPersons()));
         moveCornerBro();
         moveShlfToApp(localDate,isOpen);
         PRINTER.move(localDate,waitPrints);
@@ -77,6 +78,7 @@ public class Library {
             if (cb.get(i).getLentCount() >= 2) {
                 LibraryMoveInfo moveInfo = new LibraryMoveInfo(cb.get(i).getBookId(),"bro","bs");
                 waitPrints.add(moveInfo);
+                frontDesk.getDonaters().get(cb.get(i).getBookId()).changePoint(2);
                 LibraryBookId bsBookId = cb.get(i).getBookId().toFormal();
                 bookShelf.addBook(bsBookId);
             } else {

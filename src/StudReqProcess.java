@@ -1,23 +1,28 @@
-import com.oocourse.library2.LibraryBookId;
-import com.oocourse.library2.LibraryCommand;
-import com.oocourse.library2.LibraryReqCmd;
-import com.oocourse.library2.LibraryRequest;
+import com.oocourse.library3.LibraryBookId;
+import com.oocourse.library3.LibraryCommand;
+import com.oocourse.library3.LibraryQcsCmd;
+import com.oocourse.library3.LibraryReqCmd;
+import com.oocourse.library3.LibraryRequest;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static com.oocourse.library2.LibrarySystem.PRINTER;
+import static com.oocourse.library3.LibrarySystem.PRINTER;
 
-public class StudReqProcess {
+public class StudReqProcess { // 学生请求处理类
     private HashMap<String,Person> idToPersons;
     private final Library library;
     private HashMap<LibraryBookId, ArrayList<String>> orderIng;
+    private HashMap<LibraryBookId,Person> donaters;
+    private HashMap<String,Boolean> idOrderEdB;
 
     public StudReqProcess(Library library) {
         idToPersons = new HashMap<>();
         this.library = library;
         this.orderIng = new HashMap<>();
+        this.donaters = new HashMap<>();
+        this.idOrderEdB = new HashMap<>();
     }
 
     public void processStd(LibraryCommand command) {
@@ -57,6 +62,18 @@ public class StudReqProcess {
         }
     }
 
+    public void tryQcs(LibraryQcsCmd cmd) {
+        String perId = cmd.getStudentId();
+        Person person = idToPersons.get(perId);
+        int qsc = 10;
+        if (person == null) {
+            idToPersons.put(perId,new Person(perId));
+        } else {
+            qsc = person.getPoint(cmd.getDate());
+        }
+        PRINTER.info(cmd.getDate(),perId,qsc);
+    }
+
     public void tryDonate(LibraryCommand command) {
         LibraryRequest request = ((LibraryReqCmd) command).getRequest();
         LocalDate localDate = command.getDate();
@@ -71,6 +88,8 @@ public class StudReqProcess {
             return;
         }
         PRINTER.accept(localDate,request);
+        idToPersons.get(pid).changePoint(2);
+        donaters.put(bookId,idToPersons.get(pid));
         CornerBook cornerBook = new CornerBook(bookId,0);
         library.getDriftCorner().addBook(bookId,cornerBook);
     }
@@ -80,7 +99,7 @@ public class StudReqProcess {
         LocalDate localDate = command.getDate();
         Person person = idToPersons.get(request.getStudentId());
         LibraryBookId bookId = request.getBookId();
-        if (!bookId.isFormal()) {
+        if (!bookId.isFormal() || !person.isEnoughPoint(localDate)) {
             PRINTER.reject(localDate,request);
             return;
         }
@@ -103,7 +122,7 @@ public class StudReqProcess {
         LocalDate localDate = command.getDate();
         Person person = idToPersons.get(request.getStudentId());
         LibraryBookId bookId = request.getBookId();
-        if (bookId.isTypeBU() || bookId.isTypeAU() || bookId.isTypeCU()) {
+        if (!bookId.isFormal() || !person.isEnoughPoint(localDate)) {
             PRINTER.reject(command);
             return;
         }
@@ -112,8 +131,28 @@ public class StudReqProcess {
             PRINTER.reject(localDate,request);
             return;
         }
+        if (bookId.isTypeB()) {
+            if (idOrderEdB.get(person.getId()) != null) {
+                if (!orderIng.isEmpty()) {
+                    for (LibraryBookId key : orderIng.keySet()) {
+                        if (key.isTypeB() && orderIng.get(key).contains(person.getId())) {
+                            PRINTER.reject(localDate, request);
+                            return;
+                        }
+                    }
+                }
+            }
+        } else {
+            if (orderIng.containsKey(bookId) && orderIng.get(bookId).contains(person.getId())) {
+                PRINTER.reject(localDate, request);
+                return;
+            }
+        }
         PRINTER.accept(localDate,request);
         library.addNeedApp(request);
+        if (bookId.isTypeB()) {
+            idOrderEdB.put(person.getId(),true);
+        }
         if (orderIng.containsKey(bookId)) {
             orderIng.get(bookId).add(person.getId());
         } else {
@@ -159,8 +198,10 @@ public class StudReqProcess {
         boolean isOk = person.isOkOwn(bookId,localDate);
         if (isOk) {
             PRINTER.accept(command,"not overdue");
+            person.changePoint(1);
         } else {
             PRINTER.accept(command,"overdue");
+            person.changePoint(-2);
         }
         if (bookId.isFormal()) {
             library.getBroReOffice().addBook(bookId);
@@ -183,7 +224,7 @@ public class StudReqProcess {
         }
         if (bookId.isTypeB() || bookId.isTypeC()) {
             LibraryBookId temp = library.moveShlfToBro(localDate,bookId);
-            if (temp == null) {
+            if (temp == null || !idToPersons.get(perId).isEnoughPoint(localDate)) {
                 PRINTER.reject(localDate,request);
             } else if (bookId.isTypeB()) {
                 if (idToPersons.get(perId).isHaveB()) {
@@ -200,7 +241,7 @@ public class StudReqProcess {
             }
         } else { //Bu Cu
             CornerBook cb = library.moveCornerToBro(bookId);
-            if (cb == null) {
+            if (cb == null || !idToPersons.get(perId).isEnoughPoint(localDate)) {
                 PRINTER.reject(command);
                 return;
             }
@@ -239,5 +280,25 @@ public class StudReqProcess {
         PRINTER.accept(localDate,request);
         CornerBook book = new CornerBook(bookId,localDate,count);
         idToPersons.get(perId).addBook(bookId,book);
+    }
+
+    public HashMap<LibraryBookId, ArrayList<String>> getOrderIng() {
+        return orderIng;
+    }
+
+    public HashMap<String, Person> getIdToPersons() {
+        return idToPersons;
+    }
+
+    public HashMap<LibraryBookId, Person> getDonaters() {
+        return donaters;
+    }
+
+    public void orderNewBook() {
+        return;
+    }
+
+    public void wantFuck() {
+        return;
     }
 }
