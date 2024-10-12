@@ -1,15 +1,18 @@
-import com.oocourse.spec2.main.Person;
-import com.oocourse.spec2.main.Tag;
+import com.oocourse.spec3.main.Person;
+import com.oocourse.spec3.main.Tag;
 
 import java.util.HashMap;
 
 public class CopyTag implements Tag {
     private int id;
     private HashMap<Integer,Person> persons;
+    private int qtvs = 0;
+    private boolean iamNew = true;
 
     public CopyTag(int id) {
         this.id = id;
         this.persons = new HashMap<>();
+        CopyTagFlag.isNewValuel(this,false);
     }
 
     @Override
@@ -29,6 +32,7 @@ public class CopyTag implements Tag {
     public void addPerson(Person person) {
         if (!hasPerson(person)) {
             persons.put(person.getId(),person);
+            CopyTagFlag.isNewValuel(this,false);
         }
     }
 
@@ -40,15 +44,21 @@ public class CopyTag implements Tag {
     @Override
     public int getValueSum() {
         int ret = 0;
+        if (CopyTagFlag.find(this) && iamNew == false) {
+            return qtvs;
+        }
         if (persons.size() != 0) {
             for (Integer ieKey:persons.keySet()) {
-                for (Integer jeKey:persons.keySet()) {
-                    if (persons.get(ieKey).isLinked(persons.get(jeKey))) {
+                for (Integer jeKey:((CopyPerson) persons.get(ieKey)).getAcquaintance().keySet()) {
+                    if (persons.get(jeKey) != null) {
                         ret += persons.get(ieKey).queryValue(persons.get(jeKey));
                     }
                 }
             }
         }
+        CopyTagFlag.isNewValuel(this,true);
+        this.qtvs = ret;
+        iamNew = false;
         return ret;
     }
 
@@ -81,12 +91,29 @@ public class CopyTag implements Tag {
     public void delPerson(Person person) {
         if (hasPerson(person)) {
             persons.remove(person.getId());
+            CopyTagFlag.isNewValuel(this,false);
         }
     }
 
     @Override
     public int getSize() {
         return persons.size();
+    }
+
+    public void allPersAddSoc(int va) {
+        if (persons.size() != 0) {
+            for (Person person:persons.values()) {
+                person.addSocialValue(va);
+            }
+        }
+    }
+
+    public void allPerAddMoney(int sum) {
+        if (persons.size() != 0) {
+            for (Person person:persons.values()) {
+                person.addMoney(sum);
+            }
+        }
     }
 
     public HashMap<Integer, Person> getTagPersons() {

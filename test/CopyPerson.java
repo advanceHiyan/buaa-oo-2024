@@ -1,16 +1,23 @@
-import com.oocourse.spec2.main.Person;
-import com.oocourse.spec2.main.Tag;
+import com.oocourse.spec3.main.Message;
+import com.oocourse.spec3.main.NoticeMessage;
+import com.oocourse.spec3.main.Person;
+import com.oocourse.spec3.main.Tag;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class CopyPerson implements Person {
     private int id;
     private String name;
     private int age;
-    private ArrayList<Person> acquaintance = new ArrayList<>();
-    private ArrayList<Integer> value = new ArrayList<>();
+    private HashMap<Integer,Person> acquaintance = new HashMap<>();
+    private HashMap<Person,Integer> value = new HashMap<>();
     private HashMap<Integer,Tag> tags = new HashMap<>();
+    private int money = 0;
+    private int socialValue = 0;
+    private HashMap<Integer,Message> mapMessages = new HashMap<>();
+    private ArrayList<Message> messages = new ArrayList<>();
     private long bestID = Long.MAX_VALUE;
     private long maxVa = Long.MIN_VALUE;
 
@@ -47,6 +54,7 @@ public class CopyPerson implements Person {
 
     @Override
     public void addTag(Tag tag) {
+        CopyTagFlag.isNewValuel((CopyTag) tag,false);
         if (containsTag(tag.getId()) == false) {
             tags.put(tag.getId(),tag);
         }
@@ -54,6 +62,7 @@ public class CopyPerson implements Person {
 
     @Override
     public void delTag(int id) {
+        CopyTagFlag.isNewValuel((CopyTag) tags.get(id),false);
         if (containsTag(id)) {
             tags.remove(id);
         }
@@ -73,27 +82,73 @@ public class CopyPerson implements Person {
         if (person.getId() == id) {
             return true;
         }
-        for (int i = 0; i < acquaintance.size(); i++) {
-            if (acquaintance.get(i).getId() == person.getId()) {
-                return true;
-            }
+        if (acquaintance.get(person.getId()) != null) {
+            return true;
         }
         return false;
     }
 
     @Override
     public int queryValue(Person person) {
-        for (int i = 0; i < acquaintance.size(); i++) {
-            if (acquaintance.get(i).getId() == person.getId()) {
-                return value.get(i);
-            }
+        if (value.get(person) != null) {
+            return value.get(person);
         }
         return 0;
     }
 
+    @Override
+    public void addSocialValue(int num) {
+        this.socialValue += num;
+    }
+
+    @Override
+    public int getSocialValue() {
+        return socialValue;
+    }
+
+    @Override
+    public List<Message> getMessages() {
+        ArrayList<Message> bg = (ArrayList<Message>) messages.clone();
+        return bg;
+    }
+
+    @Override
+    public List<Message> getReceivedMessages() {
+        if (messages.size() < 5) {
+            return (List<Message>) messages.clone();
+        }
+        ArrayList<Message> bg = (ArrayList<Message>) messages.subList(0,5);
+        return bg;
+    }
+
+    @Override
+    public void addMoney(int num) {
+        this.money += num;
+    }
+
+    @Override
+    public int getMoney() {
+        return money;
+    }
+
+    public void insertMessage(Message message) {
+        messages.add(0,message);
+    }
+
+    public void clearNotices() {
+        int i = 0;
+        while (i < messages.size()) {
+            if (messages.get(i) instanceof NoticeMessage) {
+                messages.remove(i);
+            } else {
+                i++;
+            }
+        }
+    }
+
     public void buildLink(Person person, int value) {
-        this.acquaintance.add(person);
-        this.value.add(value);
+        this.acquaintance.put(person.getId(),person);
+        this.value.put(person,value);
         if (value > maxVa) {
             maxVa = value;
             bestID = person.getId();
@@ -104,56 +159,58 @@ public class CopyPerson implements Person {
 
     public void removeLink(Person person) {
         int i;
-        for (i = 0;i < acquaintance.size();i++) {
-            if (acquaintance.get(i).getId() == person.getId()) {
-                break;
-            }
+        if (acquaintance.get(person.getId()) != null) {
+            acquaintance.remove(person.getId());
+            this.value.remove(person.getId());
         }
-        this.acquaintance.remove(person);
-        this.value.remove(i);
         if (person.getId() == bestID) {
             maxVa = Long.MIN_VALUE;
             bestID = Long.MAX_VALUE;
-            for (i = 0;i < acquaintance.size();i++) {
-                if (maxVa < value.get(i)) {
-                    maxVa = value.get(i);
-                    bestID = acquaintance.get(i).getId();
-                } else if (maxVa == value.get(i) && acquaintance.get(i).getId() < bestID) {
-                    bestID = acquaintance.get(i).getId();
+            if (acquaintance.size() != 0) {
+                for (Integer key:acquaintance.keySet()) {
+                    Person p = acquaintance.get(key);
+                    if (maxVa < value.get(p)) {
+                        maxVa = value.get(p);
+                        bestID = key;
+                    } else if (maxVa == value.get(p) && acquaintance.get(key).getId() < bestID) {
+                        bestID = acquaintance.get(key).getId();
+                    }
                 }
             }
         }
     }
 
     public void addPerValue(Person person,int va) {
-        for (int i = 0; i < acquaintance.size(); i++) {
-            if (acquaintance.get(i).getId() == person.getId()) {
-                int k = value.get(i) + va;
-                value.set(i,k);
-                if (bestID == person.getId() && va < 0) {
-                    maxVa = Long.MIN_VALUE;
-                    bestID = Long.MAX_VALUE;
-                    for (i = 0;i < acquaintance.size();i++) {
-                        if (maxVa < value.get(i)) {
-                            maxVa = value.get(i);
-                            bestID = acquaintance.get(i).getId();
-                        } else if (maxVa == value.get(i) && acquaintance.get(i).getId() < bestID) {
-                            bestID = acquaintance.get(i).getId();
+        if (acquaintance.get(person.getId()) != null) {
+            int k = value.get(person) + va;
+            value.put(person,k);
+            if (bestID == person.getId() && va < 0) {
+                maxVa = Long.MIN_VALUE;
+                bestID = Long.MAX_VALUE;
+                if (acquaintance.size() != 0) {
+                    for (Integer key:acquaintance.keySet()) {
+                        Person p = acquaintance.get(key);
+                        if (maxVa < value.get(p)) {
+                            maxVa = value.get(p);
+                            bestID = key;
+                        } else if (maxVa == value.get(p) &&
+                                acquaintance.get(key).getId() < bestID) {
+                            bestID = acquaintance.get(key).getId();
                         }
                     }
-                    return;
                 }
-                if (value.get(i) > maxVa) {
-                    maxVa = value.get(i);
-                    bestID = person.getId();
-                } else if (value.get(i) == maxVa && person.getId() < bestID) {
-                    bestID = person.getId();
-                }
+                return;
+            }
+            if (value.get(person) > maxVa) {
+                maxVa = value.get(person);
+                bestID = person.getId();
+            } else if (value.get(person) == maxVa && person.getId() < bestID) {
+                bestID = person.getId();
             }
         }
     }
 
-    public ArrayList<Person> getAcquaintance() {
+    public HashMap<Integer,Person> getAcquaintance() {
         return acquaintance;
     }
 
@@ -163,6 +220,7 @@ public class CopyPerson implements Person {
         if (tags.size() > 0) {
             for (Integer key:tags.keySet()) {
                 tags.get(key).delPerson(person);
+                CopyTagFlag.isNewValuel((CopyTag) tags.get(key),false);
             }
         }
     }

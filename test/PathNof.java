@@ -1,4 +1,4 @@
-import com.oocourse.spec2.exceptions.PathNotFoundException;
+import com.oocourse.spec3.exceptions.PathNotFoundException;
 
 import java.util.HashMap;
 

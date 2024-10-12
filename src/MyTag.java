@@ -1,5 +1,5 @@
-import com.oocourse.spec2.main.Person;
-import com.oocourse.spec2.main.Tag;
+import com.oocourse.spec3.main.Person;
+import com.oocourse.spec3.main.Tag;
 
 import java.util.HashMap;
 
@@ -98,6 +98,22 @@ public class MyTag implements Tag {
     @Override
     public int getSize() {
         return persons.size();
+    }
+
+    public void allPersAddSoc(int va) {
+        if (persons.size() != 0) {
+            for (Person person:persons.values()) {
+                person.addSocialValue(va);
+            }
+        }
+    }
+
+    public void allPerAddMoney(int sum) {
+        if (persons.size() != 0) {
+            for (Person person:persons.values()) {
+                person.addMoney(sum);
+            }
+        }
     }
 
     public HashMap<Integer, Person> getTagPersons() {

@@ -1,4 +1,4 @@
-import com.oocourse.spec2.exceptions.EqualTagIdException;
+import com.oocourse.spec3.exceptions.EqualTagIdException;
 
 import java.util.HashMap;
 

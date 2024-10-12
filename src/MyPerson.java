@@ -1,7 +1,11 @@
-import com.oocourse.spec2.main.Person;
-import com.oocourse.spec2.main.Tag;
+import com.oocourse.spec3.main.Message;
+import com.oocourse.spec3.main.NoticeMessage;
+import com.oocourse.spec3.main.Person;
+import com.oocourse.spec3.main.Tag;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class MyPerson implements Person {
     private int id;
@@ -10,6 +14,10 @@ public class MyPerson implements Person {
     private HashMap<Integer,Person> acquaintance = new HashMap<>();
     private HashMap<Person,Integer> value = new HashMap<>();
     private HashMap<Integer,Tag> tags = new HashMap<>();
+    private int money = 0;
+    private int socialValue = 0;
+    private HashMap<Integer,Message> mapMessages = new HashMap<>();
+    private ArrayList<Message> messages = new ArrayList<>();
     private long bestID = Long.MAX_VALUE;
     private long maxVa = Long.MIN_VALUE;
 
@@ -86,6 +94,56 @@ public class MyPerson implements Person {
             return value.get(person);
         }
         return 0;
+    }
+
+    @Override
+    public void addSocialValue(int num) {
+        this.socialValue += num;
+    }
+
+    @Override
+    public int getSocialValue() {
+        return socialValue;
+    }
+
+    @Override
+    public List<Message> getMessages() {
+        ArrayList<Message> bg = (ArrayList<Message>) messages.clone();
+        return bg;
+    }
+
+    @Override
+    public List<Message> getReceivedMessages() {
+        if (messages.size() < 5) {
+            return (List<Message>) messages.clone();
+        }
+        List<Message> bg = messages.subList(0,5);
+        return bg;
+    }
+
+    @Override
+    public void addMoney(int num) {
+        this.money += num;
+    }
+
+    @Override
+    public int getMoney() {
+        return money;
+    }
+
+    public void insertMessage(Message message) {
+        messages.add(0,message);
+    }
+
+    public void clearNotices() {
+        int i = 0;
+        while (i < messages.size()) {
+            if (messages.get(i) instanceof NoticeMessage) {
+                messages.remove(i);
+            } else {
+                i++;
+            }
+        }
     }
 
     public void buildLink(Person person, int value) {

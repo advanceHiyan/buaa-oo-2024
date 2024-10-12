@@ -1,20 +1,31 @@
-import com.oocourse.spec2.exceptions.EqualRelationException;
-import com.oocourse.spec2.exceptions.EqualTagIdException;
-import com.oocourse.spec2.exceptions.EqualPersonIdException;
-import com.oocourse.spec2.exceptions.RelationNotFoundException;
-import com.oocourse.spec2.exceptions.AcquaintanceNotFoundException;
-import com.oocourse.spec2.exceptions.PathNotFoundException;
-import com.oocourse.spec2.exceptions.PersonIdNotFoundException;
-import com.oocourse.spec2.exceptions.TagIdNotFoundException;
-import com.oocourse.spec2.main.Network;
-import com.oocourse.spec2.main.Person;
-import com.oocourse.spec2.main.Tag;
+import com.oocourse.spec3.exceptions.EmojiIdNotFoundException;
+import com.oocourse.spec3.exceptions.EqualPersonIdException;
+import com.oocourse.spec3.exceptions.PersonIdNotFoundException;
+import com.oocourse.spec3.exceptions.EqualRelationException;
+import com.oocourse.spec3.exceptions.AcquaintanceNotFoundException;
+import com.oocourse.spec3.exceptions.EqualEmojiIdException;
+import com.oocourse.spec3.exceptions.EqualMessageIdException;
+import com.oocourse.spec3.exceptions.EqualTagIdException;
+import com.oocourse.spec3.exceptions.MessageIdNotFoundException;
+import com.oocourse.spec3.exceptions.PathNotFoundException;
+import com.oocourse.spec3.exceptions.RelationNotFoundException;
+import com.oocourse.spec3.exceptions.TagIdNotFoundException;
+import com.oocourse.spec3.main.Message;
+import com.oocourse.spec3.main.Network;
+import com.oocourse.spec3.main.Person;
+import com.oocourse.spec3.main.Tag;
+import com.oocourse.spec3.main.EmojiMessage;
+import com.oocourse.spec3.main.RedEnvelopeMessage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class OneNetwork implements Network {
     private HashMap<Integer,Person> persons;
+    private HashMap<Integer,Message> messages = new HashMap<>();
+    private HashMap<Integer,Boolean> emojiIdList = new HashMap<>();
+    private HashMap<Integer, Integer> emojiHeatList = new HashMap<Integer, Integer>();
     private HashMap<Integer,Integer> toTreeEnd; //构造一个连通的树
     private int sumTriple;
     private int sumBlock;
@@ -47,7 +58,7 @@ public class OneNetwork implements Network {
             toTreeEnd.put(person.getId(),null);
             sumBlock++;
         } else {
-            throw new MEP(person.getId());
+            throw new MyEqualPersonIdException(person.getId());
         }
     }
 
@@ -63,6 +74,9 @@ public class OneNetwork implements Network {
                 sumBlock--;
             }
             sumTriple += findCommon(id1,id2);
+            for (CopyTag key:CopyTagFlag.getIsNewValue().keySet()) {
+                CopyTagFlag.isNewValuel(key,false);
+            }
         } else {
             if (!containsPerson(id1)) {
                 throw new MP(id1);
@@ -70,7 +84,7 @@ public class OneNetwork implements Network {
                 throw new MP(id2);
             } else if (containsPerson(id1) && containsPerson(id2) &&
                     getPerson(id1).isLinked(getPerson(id2))) {
-                throw new MER(id1, id2);
+                throw new MyEqualRelationException(id1, id2);
             }
         }
     }
@@ -83,6 +97,9 @@ public class OneNetwork implements Network {
                 (getPerson(id1).queryValue(getPerson(id2)) + value) > 0) {
             ((CopyPerson) getPerson(id1)).addPerValue(getPerson(id2),value);
             ((CopyPerson) getPerson(id2)).addPerValue(getPerson(id1),value);
+            for (CopyTag key:CopyTagFlag.getIsNewValue().keySet()) {
+                CopyTagFlag.isNewValuel(key,false);
+            }
         } else if (containsPerson(id1) && containsPerson(id2) && id1 != id2 &&
                 getPerson(id1).isLinked(getPerson(id2)) &&
                 (getPerson(id1).queryValue(getPerson(id2)) + value) <= 0) {
@@ -92,6 +109,9 @@ public class OneNetwork implements Network {
             sumTriple -= findCommon(id1,id2);
             ((CopyPerson) getPerson(id1)).modTagRemove(getPerson(id2));
             ((CopyPerson) getPerson(id2)).modTagRemove(getPerson(id1));
+            for (CopyTag key:CopyTagFlag.getIsNewValue().keySet()) {
+                CopyTagFlag.isNewValuel(key,false);
+            }
         } else if (!containsPerson(id1) || !containsPerson(id2) || id1 == id2 ||
                 !getPerson(id1).isLinked(getPerson(id2))) {
             if (!containsPerson(id1)) {
@@ -99,9 +119,9 @@ public class OneNetwork implements Network {
             } else if (containsPerson(id1) && !containsPerson(id2)) {
                 throw new MP(id2);
             } else if (id1 == id2) {
-                throw new MEP(id1);
+                throw new MyEqualPersonIdException(id1);
             } else {
-                throw new MR(id1,id2);
+                throw new MyRelationNotFoundException(id1,id2);
             }
         }
     }
@@ -117,7 +137,7 @@ public class OneNetwork implements Network {
             } else if (containsPerson(id1) && !containsPerson(id2)) {
                 throw new MP(id2);
             } else {
-                throw new MR(id1,id2);
+                throw new MyRelationNotFoundException(id1,id2);
             }
         }
     }
@@ -150,11 +170,12 @@ public class OneNetwork implements Network {
             PersonIdNotFoundException, EqualTagIdException {
         if (containsPerson(personId) && !getPerson(personId).containsTag(tag.getId())) {
             getPerson(personId).addTag(tag);
+            CopyTagFlag.isNewValuel((CopyTag) tag,false);
         } else {
             if (!containsPerson(personId)) {
                 throw new MP(personId);
             } else {
-                throw new ETN(tag.getId());
+                throw new MyEqualTagIdException(tag.getId());
             }
         }
     }
@@ -175,13 +196,13 @@ public class OneNetwork implements Network {
             } else if (!containsPerson(personId2)) {
                 throw new MP(personId2);
             } else if (personId1 == personId2) {
-                throw new MEP(personId1);
+                throw new MyEqualPersonIdException(personId1);
             } else if (!getPerson(personId2).isLinked(getPerson(personId1))) {
-                throw new MR(personId1,personId2);
+                throw new MyRelationNotFoundException(personId1,personId2);
             } else if (!getPerson(personId2).containsTag(tagId)) {
                 throw new TNF(tagId);
             } else if (getPerson(personId2).getTag(tagId).hasPerson(getPerson(personId1))) {
-                throw new MEP(personId1);
+                throw new MyEqualPersonIdException(personId1);
             }
         }
     }
@@ -249,6 +270,191 @@ public class OneNetwork implements Network {
     }
 
     @Override
+    public boolean containsMessage(int id) {
+        return messages.containsKey(id);
+    }
+
+    @Override
+    public void addMessage(Message message) throws EqualMessageIdException
+            , EmojiIdNotFoundException, EqualPersonIdException {
+        boolean flag = false;
+        if (!containsMessage(message.getId())) {
+            flag = true;
+            if (message instanceof EmojiMessage &&
+                    containsEmojiId(((EmojiMessage) message).getEmojiId()) == false) {
+                flag = false;
+            }
+            if ((message.getType() == 0) && message.getPerson1().equals(message.getPerson2())) {
+                flag = false;
+            }
+        }
+        if (flag) {
+            messages.put(message.getId(),message);
+        } else {
+            if (containsMessage(message.getId())) {
+                throw new MyEqualMessageIdException(message.getId());
+            } else if ((message instanceof EmojiMessage) &&
+                    !containsEmojiId(((EmojiMessage) message).getEmojiId())) {
+                throw new MyEmojiIdNotFoundException(message.getId());
+            } else {
+                throw new MyEqualPersonIdException(message.getPerson1().getId());
+            }
+        }
+    }
+
+    @Override
+    public Message getMessage(int id) {
+        return messages.get(id); // 可能为合法null！！！！
+    }
+
+    @Override
+    public void sendMessage(int id) throws RelationNotFoundException
+            , MessageIdNotFoundException, TagIdNotFoundException {
+        if (containsMessage(id) && getMessage(id).getType() == 0 &&
+                getMessage(id).getPerson1().isLinked(getMessage(id).getPerson2()) &&
+                getMessage(id).getPerson1() != getMessage(id).getPerson2()) {
+            getMessage(id).getPerson1().addSocialValue(getMessage(id).getSocialValue());
+            getMessage(id).getPerson2().addSocialValue(getMessage(id).getSocialValue());
+            if (getMessage(id) instanceof RedEnvelopeMessage) {
+                getMessage(id).getPerson1().addMoney(-1 *
+                        (((RedEnvelopeMessage) getMessage(id)).getMoney()));
+                getMessage(id).getPerson2().addMoney(((RedEnvelopeMessage)
+                        getMessage(id)).getMoney());
+            }
+            if (getMessage(id) instanceof EmojiMessage) {
+                int emId = ((EmojiMessage) getMessage(id)).getEmojiId();
+                if (emojiIdList.containsKey(emId)) {
+                    emojiHeatList.put(emId,emojiHeatList.get(emId) + 1);
+                } else {
+                    emojiIdList.put(emId,true);
+                    emojiHeatList.put(emId,0);
+                }
+            }
+            ((CopyPerson) getMessage(id).getPerson2()).insertMessage(getMessage(id));
+            messages.put(id,null);
+        } else if (containsMessage(id) && getMessage(id).getType() == 1 &&
+                getMessage(id).getTag().hasPerson(getMessage(id).getPerson1())) {
+            getMessage(id).getPerson1().addSocialValue(getMessage(id).getSocialValue());
+            ((CopyTag) getMessage(id).getTag()).allPersAddSoc(getMessage(id).getSocialValue());
+            if (getMessage(id) instanceof RedEnvelopeMessage) {
+                int i = ((RedEnvelopeMessage) (getMessage(id))).getMoney() /
+                        (getMessage(id)).getTag().getSize();
+                getMessage(id).getPerson1().addMoney(i * -1 * (getMessage(id)).getTag().getSize());
+                ((CopyTag) getMessage(id).getTag()).allPerAddMoney(i);
+            }
+            if (getMessage(id) instanceof EmojiMessage) {
+                int emId = ((EmojiMessage) getMessage(id)).getEmojiId();
+                if (emojiIdList.containsKey(emId)) {
+                    emojiHeatList.put(emId,emojiHeatList.get(emId) + 1);
+                } else {
+                    emojiIdList.put(emId,true);
+                    emojiHeatList.put(emId,0);
+                }
+            }
+            messages.put(id,null);
+        } else {
+            if (!containsMessage(id)) {
+                throw new MyMessageIdNotFoundException(id);
+            } else if (getMessage(id).getType() == 0 &&
+                    !(getMessage(id).getPerson1().isLinked(getMessage(id).getPerson2()))) {
+                throw new MyRelationNotFoundException(getMessage(id).getPerson1().getId()
+                        ,getMessage(id).getPerson2().getId());
+            } else if (getMessage(id).getType() == 1 &&
+                    !(getMessage(id).getTag().hasPerson(getMessage(id).getPerson1()))) {
+                throw new TNF(getMessage(id).getId());
+            }
+        }
+    }
+
+    @Override
+    public int querySocialValue(int id) throws PersonIdNotFoundException {
+        if (containsPerson(id)) {
+            return getPerson(id).getSocialValue();
+        } else {
+            throw new MP(id);
+        }
+    }
+
+    @Override
+    public List<Message> queryReceivedMessages(int id) throws PersonIdNotFoundException {
+        if (containsPerson(id)) {
+            return getPerson(id).getReceivedMessages();
+        } else {
+            throw new MP(id);
+        }
+    }
+
+    @Override
+    public boolean containsEmojiId(int id) {
+        return (emojiIdList.containsKey(id));
+    }
+
+    @Override
+    public void storeEmojiId(int id) throws EqualEmojiIdException {
+        if (!containsEmojiId(id)) {
+            emojiIdList.put(id,true);
+            emojiHeatList.put(id, 0);
+        } else {
+            throw new MyEqualEmojiIdException(id);
+        }
+    }
+
+    @Override
+    public int queryMoney(int id) throws PersonIdNotFoundException {
+        if (containsPerson(id)) {
+            return getPerson(id).getMoney();
+        } else {
+            throw new MP(id);
+        }
+    }
+
+    @Override
+    public int queryPopularity(int id) throws EmojiIdNotFoundException {
+        if (containsEmojiId(id)) {
+            return emojiHeatList.get(id);
+        } else {
+            throw new MyEmojiIdNotFoundException(id);
+        }
+    }
+
+    @Override
+    public int deleteColdEmoji(int limit) {
+        ArrayList<Integer> sb = new ArrayList<>();
+        if (emojiIdList.size() != 0) {
+            for (Integer key:emojiHeatList.keySet()) {
+                if (emojiHeatList.get(key) < limit) {
+                    sb.add(key);
+                }
+            }
+        }
+        for (int i = 0;i < sb.size();i++) {
+            emojiHeatList.remove(sb.get(i));
+            emojiIdList.remove(sb.get(i));
+        }
+        ArrayList<Integer> dsb = new ArrayList<>();
+        for (Integer key:messages.keySet()) {
+            if (messages.get(key) instanceof EmojiMessage &&
+                    emojiIdList.get(((EmojiMessage)messages.get(key)).getEmojiId()) == null) {
+                dsb.add(key);
+            }
+        }
+        for (int i = 0;i < dsb.size();i++) {
+            messages.remove(dsb.get(i));
+        }
+        assert (emojiIdList.size() == emojiHeatList.size());
+        return emojiIdList.size();
+    }
+
+    @Override
+    public void clearNotices(int personId) throws PersonIdNotFoundException {
+        if (containsPerson(personId)) {
+            ((CopyPerson) getPerson(personId)).clearNotices();
+        } else {
+            throw new MP(personId);
+        }
+    }
+
+    @Override
     public int queryBestAcquaintance(int id) throws
             PersonIdNotFoundException, AcquaintanceNotFoundException {
         if (containsPerson(id) && ((CopyPerson) getPerson(id)).getAcquaintance().size() != 0) {
@@ -257,7 +463,7 @@ public class OneNetwork implements Network {
             if (!containsPerson(id)) {
                 throw new MP(id);
             } else {
-                throw new ACN(id);
+                throw new MyAcquaintanceNotFoundException(id);
             }
         }
     }
@@ -265,19 +471,22 @@ public class OneNetwork implements Network {
     @Override
     public int queryCoupleSum() {
         int ret = 0;
+        if (persons.size() == 0) {
+            return 0;
+        }
         for (Integer ieKey:persons.keySet()) {
-            for (Integer jeKey:persons.keySet()) {
-                if (ieKey == jeKey) {
-                    break;
-                }
-                CopyPerson ieP = (CopyPerson) persons.get(ieKey);
-                CopyPerson jeP = (CopyPerson) persons.get(jeKey);
-                if (ieP.getAcquaintance().size() > 0 && ieP.findBestID() == jeKey &&
-                        jeP.getAcquaintance().size() > 0 && jeP.findBestID() == ieKey) {
-                    ret++;
+            CopyPerson ieP = (CopyPerson) persons.get(ieKey);
+            if (ieP.getAcquaintance().size() != 0) {
+                int j = ieP.findBestID();
+                CopyPerson jeP = ((CopyPerson) persons.get(j));
+                if (jeP.getAcquaintance().size() != 0) {
+                    if (jeP.findBestID() == ieKey) {
+                        ret++;
+                    }
                 }
             }
         }
+        ret /= 2;
         return ret;
     }
 
@@ -300,7 +509,7 @@ public class OneNetwork implements Network {
             } else if (!containsPerson(id2)) {
                 throw new MP(id2);
             } else {
-                throw new PathNof(id1,id2);
+                throw new MyPathNotFoundException(id1,id2);
             }
         }
     }
@@ -308,14 +517,16 @@ public class OneNetwork implements Network {
     public int findNearPath(int floor,ArrayList<Person> floorPoople,int id2) {
         ArrayList<Person> newPeople = new ArrayList<>();
         for (int i = 0;i < floorPoople.size();i++) {
-            for (int j = 0;j < ((CopyPerson) floorPoople.get(i)).getAcquaintance().size();j++) {
-                Person p = ((CopyPerson) floorPoople.get(i)).getAcquaintance().get(j);
-                if (p.getId() == id2) {
-                    return floor;
-                } else {
-                    if (mark.get(p.getId()) == null) {
-                        mark.put(p.getId(),1);
-                        newPeople.add(p);
+            if (((CopyPerson) floorPoople.get(i)).getAcquaintance().size() != 0) {
+                for (Integer jeKey:((CopyPerson) floorPoople.get(i)).getAcquaintance().keySet()) {
+                    Person p = ((CopyPerson) floorPoople.get(i)).getAcquaintance().get(jeKey);
+                    if (p.getId() == id2) {
+                        return floor;
+                    } else {
+                        if (mark.get(p.getId()) == null) {
+                            mark.put(p.getId(),1);
+                            newPeople.add(p);
+                        }
                     }
                 }
             }
@@ -361,9 +572,10 @@ public class OneNetwork implements Network {
 
     public void addQueueAndChange(HashMap<Integer,Person> queue,CopyPerson personHead,int newEnd) {
         if (personHead.getAcquaintance() != null && !personHead.getAcquaintance().isEmpty()) {
-            for (Person CopyPerson:personHead.getAcquaintance()) {
+            for (Integer key:personHead.getAcquaintance().keySet()) {
+                Person CopyPerson = personHead.getAcquaintance().get(key);
                 if (queue.get(CopyPerson.getId()) == null) {
-                    queue.put(CopyPerson.getId(),CopyPerson);
+                    queue.put(CopyPerson.getId(), CopyPerson);
                     toTreeEnd.put(CopyPerson.getId(),newEnd);
                     addQueueAndChange(queue,(CopyPerson) CopyPerson,newEnd);
                 }
@@ -373,10 +585,11 @@ public class OneNetwork implements Network {
 
     public int findCommon(int id1,int id2) {
         int ret = 0;
-        ArrayList<Person> cnm = ((CopyPerson) persons.get(id1)).getAcquaintance();
+        HashMap<Integer,Person> cnm = ((CopyPerson) persons.get(id1)).getAcquaintance();
         if (cnm != null && !cnm.isEmpty()) {
-            for (Person person:cnm) {
-                if (((CopyPerson) persons.get(id2)).getAcquaintance().contains(person)) {
+            for (Integer k:cnm.keySet()) {
+                Person person = cnm.get(k);
+                if (((CopyPerson) persons.get(id2)).getAcquaintance().get(k) != null) {
                     ret++;
                 }
             }
@@ -385,4 +598,10 @@ public class OneNetwork implements Network {
     }
 
     public Person[] getPersons() { return null; }
+
+    public Message[] getMessages() { return null; }
+
+    public int[] getEmojiIdList() { return null; }
+
+    public int[] getEmojiHeatList() { return null; }
 }
