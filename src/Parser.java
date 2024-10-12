@@ -7,7 +7,7 @@ public class Parser {
         this.lexer = lexer;
     }
 
-    public Expr parserExpr() {
+    public Expr parserExpr(boolean need) {
         ArrayList<Term> terms = new ArrayList<>();
         ArrayList<Token> ops = new ArrayList<>();
         terms.add(parserTerm());
@@ -17,7 +17,7 @@ public class Parser {
             lexer.move();
             terms.add(parserTerm());
         }
-        return new Expr(terms, ops);
+        return new Expr(terms, ops,need);
     }
 
     public Term parserTerm() {
@@ -56,7 +56,7 @@ public class Parser {
             return letter;
         } else if (lexer.now().getType() == Token.Type.L_K) {
             lexer.move();
-            Expr expr = parserExpr();
+            Expr expr = parserExpr(false);
             lexer.move();
             return expr;
         } else if (lexer.now().getType() == Token.Type.ThreeExp) {
@@ -85,6 +85,12 @@ public class Parser {
             }
             ExPexP exPexPKandE = new ExPexP(expKHtokens,expCent);
             return exPexPKandE;
+        } else if (lexer.now().getType() == Token.Type.QD) {
+            lexer.move();
+            lexer.move();
+            Expr expr = parserExpr(true);
+            lexer.move();
+            return expr;
         } else {
             System.out.println(lexer.last());
             System.out.println(lexer.now().getType());

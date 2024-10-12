@@ -5,9 +5,16 @@ public class Expr implements Factor {
 
     private final ArrayList<Token> ops = new ArrayList<>();
 
-    public Expr(ArrayList<Term> terms, ArrayList<Token> ops) {
+    private boolean needQd;
+
+    public Expr(ArrayList<Term> terms, ArrayList<Token> ops,boolean need) {
         this.terms.addAll(terms);
         this.ops.addAll(ops);
+        this.needQd = need;
+    }
+
+    public void QiuDao() {
+        this.needQd = false;
     }
 
     public Poly toPoly() {
@@ -24,6 +31,10 @@ public class Expr implements Factor {
             i++;
         }
         newpoly.Tidymonos();
+        if (this.needQd) {
+            newpoly.qiuDao();
+            this.QiuDao();
+        }
         return newpoly;
     }
 

@@ -34,6 +34,9 @@ public class Lexer {
             } else if (input.charAt(pos) == 'e') {
                 tokens.add(new Token(Token.Type.ThreeExp,"exp"));
                 pos += 3;
+            } else if (input.charAt(pos) == 'd') {
+                tokens.add(new Token(Token.Type.QD,"dx"));
+                pos += 2;
             } else {
                 char now = input.charAt(pos);
                 StringBuffer sb = new StringBuffer();

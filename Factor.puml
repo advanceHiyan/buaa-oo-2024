@@ -1,0 +1,7 @@
+@startuml
+interface Factor {
+~ Poly toPoly()
+~ String toString()
+}
+
+@enduml

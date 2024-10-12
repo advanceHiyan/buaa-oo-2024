@@ -1,7 +1,7 @@
 import java.math.BigInteger;
 import java.util.ArrayList;
 
-public class CoreFactor implements Factor {
+public class CoreFactor {
     private ArrayList<Factor> factors = new ArrayList<>();
     private int exp;
 

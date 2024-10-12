@@ -58,6 +58,26 @@ public class Mono {
         return newmono;
     }
 
+    public void noreMul(Mono op) {
+        if (op.getCment().equals(new BigInteger("0")) ||
+                this.getCment().equals(new BigInteger("0"))) {
+            this.cment = new BigInteger("0");
+            return;
+        }
+        if (this.haveEeXxPp == false) {
+            this.haveEeXxPp = op.haveEeXxPp;
+            this.expNeiPoly = op.expNeiPoly;
+            this.cment = this.cment.multiply(op.cment);
+            this.ement = this.ement.add(op.ement);
+        } else {
+            if (op.haveEeXxPp) {
+                this.expNeiPoly.addMonos(op.getExpNeiPoly());
+            }
+            this.cment = this.cment.multiply(op.cment);
+            this.ement = this.ement.add(op.ement);
+        }
+    }
+
     public void odverse() {
         this.cment = this.cment.multiply(BigInteger.valueOf(-1));
     }
@@ -97,5 +117,23 @@ public class Mono {
 
     public Poly getExpNeiPoly() {
         return expNeiPoly;
+    }
+
+    public Mono rexpdx() {
+        Mono n = new Mono(this.cment,this.ement,
+                this.gethaveEeXxP(),this.getExpNeiPoly());
+        n.checkSign(this.getSign());
+        n.dxNoExp();
+        return n;
+    }
+
+    public void dxNoExp() {
+        if (this.ement.equals(new BigInteger("0"))) {
+            this.cment = new BigInteger("0");
+            this.ement = new BigInteger("1");
+        } else {
+            this.cment = this.cment.multiply(this.ement);
+            this.ement = this.ement.subtract(new BigInteger("1"));
+        }
     }
 }

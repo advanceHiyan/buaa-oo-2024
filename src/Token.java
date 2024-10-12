@@ -12,7 +12,8 @@ public class Token {
         ADD,SUB,MUL,EXP,
         L_K,R_K,
         NUM,X,
-        ThreeExp
+        ThreeExp,
+        QD
     }
 
     public String getContent() {

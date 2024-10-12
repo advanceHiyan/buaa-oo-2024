@@ -21,7 +21,7 @@ public class Main {
 
         Parser parser = new Parser(lexer);
 
-        Expr expr = parser.parserExpr();
+        Expr expr = parser.parserExpr(false);
 
         Poly anspoly = expr.toPoly();
         FinPro fp = new FinPro(anspoly);

@@ -16,7 +16,7 @@ public class ExPexP implements Factor {
         Poly poly = new Poly();
         Lexer explexer = new Lexer(this.exptoString());
         Parser exparser = new Parser(explexer);
-        Expr expExpr = exparser.parserExpr();
+        Expr expExpr = exparser.parserExpr(false);
         Poly expoly = expExpr.toPoly();
         Mono mono = new Mono(new BigInteger("1"),new BigInteger("0"),true,expoly);
         poly.getMonos().add(mono);

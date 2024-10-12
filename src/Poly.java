@@ -44,6 +44,40 @@ public class Poly {
         return sb.toString();
     }
 
+    public void qiuDao() {
+        ArrayList<Mono> addmns = new ArrayList<>();
+        for (Mono mono:this.monos) {
+            if (mono.gethaveEeXxP()) {
+                Mono n = new Mono(mono.getCment(),mono.getEment(),
+                        mono.gethaveEeXxP(),mono.getExpNeiPoly());
+                n.checkSign(mono.getSign());
+                addmns.add(n);
+                mono.dxNoExp();
+            } else {
+                mono.dxNoExp();
+            }
+        }
+        ArrayList<Mono> newaddmonos = new ArrayList<>();
+        for (Mono mono:addmns) {
+            Poly epoly = new Poly();
+            for (Mono exm:mono.getExpNeiPoly().getMonos()) {
+                Mono m = new Mono(exm.getCment(),exm.getEment(),exm.gethaveEeXxP(),
+                        exm.getExpNeiPoly());
+                m.checkSign(exm.getSign());
+                epoly.getMonos().add(m);
+            }
+            epoly.qiuDao();
+            for (Mono qd:epoly.getMonos()) {
+                Mono jia = new Mono(mono.getCment(),mono.getEment(),
+                        mono.gethaveEeXxP(),mono.getExpNeiPoly());
+                jia.noreMul(qd);
+                newaddmonos.add(jia);
+            }
+        }
+        monos.addAll(newaddmonos);
+        this.Tidymonos();
+    }
+
     public void Tidymonos() {
         HashMap<BigInteger,Mono> ces = new HashMap<>();
         HashMap<String, Mono> xifindstr = new HashMap<>();
