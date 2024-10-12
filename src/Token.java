@@ -11,7 +11,8 @@ public class Token {
     public enum Type {
         ADD,SUB,MUL,EXP,
         L_K,R_K,
-        NUM,X
+        NUM,X,
+        ThreeExp
     }
 
     public String getContent() {

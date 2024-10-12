@@ -8,7 +8,7 @@ public class Letter implements Factor {
     }
 
     public Poly toPoly() {
-        Mono mono = new Mono(new BigInteger("1"),1);
+        Mono mono = new Mono(new BigInteger("1"),new BigInteger("1"),false,null);
         Poly poly = new Poly();
         poly.addMono(mono);
         return poly;

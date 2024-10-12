@@ -23,6 +23,7 @@ public class Expr implements Factor {
             newpoly.getMonos().addAll(opoly.getMonos());
             i++;
         }
+        newpoly.Tidymonos();
         return newpoly;
     }
 

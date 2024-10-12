@@ -1,4 +1,6 @@
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Poly {
 
@@ -18,8 +20,8 @@ public class Poly {
 
     public void multpoly(Poly op) {
         ArrayList<Mono> addmonos = new ArrayList<>();
-        for (Mono it: monos) {
-            for (Mono that:op.getMonos()) {
+        for (Mono it : monos) {
+            for (Mono that : op.getMonos()) {
                 Mono mono = it.mul(that);
                 addmonos.add(mono);
             }
@@ -30,7 +32,7 @@ public class Poly {
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        for (Mono it:this.monos) {
+        for (Mono it : this.monos) {
             int sign = it.getSign();
             if (sign == 1) {
                 sb.append("+");
@@ -38,6 +40,83 @@ public class Poly {
                 sb.append("-");
             }
             sb.append(it.toString());
+        }
+        return sb.toString();
+    }
+
+    public void Tidymonos() {
+        HashMap<BigInteger,Mono> ces = new HashMap<>();
+        HashMap<String, Mono> xifindstr = new HashMap<>();
+
+        for (Mono mono : this.monos) {
+            BigInteger e = mono.getEment();
+            mono.checkCmul();
+            if (mono.gethaveEeXxP() && mono.getCment().equals(new BigInteger("0")) == false) {
+                BigInteger cnm = mono.getCment();
+                String bcl = getOneExpStr(mono);
+                if (xifindstr.get(bcl) == null) {
+                    Mono linshi = mono;
+                    Mono lianbiaoMono = new Mono(linshi.getCment(),
+                            linshi.getEment(),linshi.gethaveEeXxP(),linshi.getExpNeiPoly());
+                    xifindstr.put(bcl, lianbiaoMono);
+                } else {
+                    xifindstr.get(bcl).checkCadd(mono.getCment());
+                }
+                continue;
+            }
+            if (ces.get(e) != null) {
+                ces.get(e).checkCadd(mono.getCment());
+            } else {
+                ces.put(e, mono);
+            }
+        }
+        this.monos.clear();
+        BigInteger zero = new BigInteger("0");
+        for (BigInteger key: ces.keySet()) {
+            BigInteger c = ces.get(key).getCment();
+            Mono newmono = new Mono(c.abs(),ces.get(key).getEment(),false,null);
+            if (c.compareTo(zero) == -1) {
+                newmono.checkSign(-1);
+            }
+            this.monos.add(newmono);
+        }
+        for (String key:xifindstr.keySet()) {
+            Mono newmono = new Mono(xifindstr.get(key).getCment().abs(),
+                    xifindstr.get(key).getEment(), true,xifindstr.get(key).getExpNeiPoly());
+            if (xifindstr.get(key).getCment().compareTo(zero) == -1) {
+                newmono.checkSign(-1);
+            }
+            this.monos.add(newmono);
+        }
+    }
+
+    public String getOneExpStr(Mono m) {
+        StringBuilder sb = new StringBuilder();
+        if (m.getEment().equals(new BigInteger("0"))) {
+            sb.append("exp(");
+            String expstr = this.FindKRofexp(m.getExpNeiPoly());
+            sb.append(expstr + ")+");
+            return sb.toString();
+        }
+        sb.append("x");
+        if (m.getEment().equals(new BigInteger("1")) == false) {
+            sb.append("^" + m.getEment());
+        }
+        sb.append("*exp(");
+        String expstr = this.FindKRofexp(m.getExpNeiPoly());
+        sb.append(expstr + ")+");
+        return sb.toString();
+    }
+
+    public String FindKRofexp(Poly expoly) {
+        FinPro fp = new FinPro(expoly);
+        StringBuilder sb = new StringBuilder();
+        if (fp.getsize() > 1) {
+            sb.append("(");
+            sb.append(fp.SimplifyToStr());
+            sb.append(")");
+        } else {
+            sb.append("(" + fp.SimplifyToStr() + ")");
         }
         return sb.toString();
     }

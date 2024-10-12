@@ -2,13 +2,13 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class FinPro {
+public class AaaK {
     private Poly poly = new Poly();
     private HashMap<BigInteger, BigInteger> ces = new HashMap<>();
 
     private ArrayList<Mono> haveexpmonos = new ArrayList<>();
 
-    public FinPro(Poly opoly) {
+    public AaaK(Poly opoly) {
         this.poly = opoly;
     }
 
@@ -26,7 +26,7 @@ public class FinPro {
                     Mono lianbiaoMono = new Mono(linshi.getCment(),
                             linshi.getEment(),linshi.gethaveEeXxP(),linshi.getExpNeiPoly());
                     xifindstr.put(bcl, lianbiaoMono);
-                    haveexpmonos.add(lianbiaoMono);
+                    haveexpmonos.add(mono);
                 } else {
                     xifindstr.get(bcl).checkCadd(mono.getCment());
                 }
@@ -116,19 +116,6 @@ public class FinPro {
     }
 
     public String FindKRofexp(Poly expoly) {
-        FinPro fp = new FinPro(expoly);
-        StringBuilder sb = new StringBuilder();
-        if (fp.getsize() > 1) {
-            sb.append("(");
-            sb.append(fp.SimplifyToStr());
-            sb.append(")");
-        } else {
-            sb.append("(" + fp.SimplifyToStr() + ")");
-        }
-        return sb.toString();
-    }
-
-    public String FindKRofexpcopyak(Poly expoly) {
         AaaK fp = new AaaK(expoly);
         StringBuilder sb = new StringBuilder();
         if (fp.getsize() > 1) {

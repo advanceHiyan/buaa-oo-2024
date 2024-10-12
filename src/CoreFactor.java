@@ -16,9 +16,15 @@ public class CoreFactor implements Factor {
     public Poly toPoly() {
         Poly poly = factors.get(0).toPoly();
         int exp = Integer.parseInt(factors.get(1).toString());
-        if (exp == 0) {
+        if (poly.getMonos().get(0).getCment().equals(new BigInteger("0"))
+                && poly.getMonos().size() == 1) {
+            poly.getMonos().clear();
+            poly.getMonos().add(new Mono(new BigInteger("0"),new BigInteger("0"),false,null));
+            return poly;
+        }
+        else if (exp == 0) {
             Poly tempoly = new Poly();
-            tempoly.addMono(new Mono(new BigInteger("1"),0));
+            tempoly.addMono(new Mono(new BigInteger("1"),new BigInteger("0"),false,null));
             return tempoly;
         }
         else {

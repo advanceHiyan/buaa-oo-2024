@@ -31,6 +31,9 @@ public class Lexer {
             } else if (input.charAt(pos) == 'x') {
                 tokens.add(new Token(Token.Type.X,"x"));
                 pos++;
+            } else if (input.charAt(pos) == 'e') {
+                tokens.add(new Token(Token.Type.ThreeExp,"exp"));
+                pos += 3;
             } else {
                 char now = input.charAt(pos);
                 StringBuffer sb = new StringBuffer();
@@ -57,6 +60,10 @@ public class Lexer {
 
     public Token last() {
         return tokens.get(cur - 1);
+    }
+
+    public Token next() {
+        return tokens.get(cur + 1);
     }
 
     public boolean notEnd() {

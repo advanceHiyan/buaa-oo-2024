@@ -59,6 +59,32 @@ public class Parser {
             Expr expr = parserExpr();
             lexer.move();
             return expr;
+        } else if (lexer.now().getType() == Token.Type.ThreeExp) {
+            ArrayList<Token> expKHtokens = new ArrayList<>();
+            lexer.move();
+            lexer.move();
+            int kkcnt = 1;
+            while (kkcnt != 0) {
+                if (lexer.now().getType() == Token.Type.L_K) {
+                    kkcnt++;
+                } else if (lexer.now().getType() == Token.Type.R_K) {
+                    kkcnt--;
+                }
+                if (kkcnt != 0) {
+                    expKHtokens.add(lexer.now());
+                }
+                lexer.move();
+            }
+            int expCent = 1;
+            if (lexer.notEnd()) {
+                if (lexer.now().getType() == Token.Type.EXP) {
+                    lexer.move();
+                    expCent = Integer.parseInt(lexer.now().getContent());
+                    lexer.move();
+                }
+            }
+            ExPexP exPexPKandE = new ExPexP(expKHtokens,expCent);
+            return exPexPKandE;
         } else {
             System.out.println(lexer.last());
             System.out.println(lexer.now().getType());

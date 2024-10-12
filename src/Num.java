@@ -13,7 +13,7 @@ public class Num implements Factor {
     }
 
     public Poly toPoly() {
-        Mono mono = new Mono(value,0);
+        Mono mono = new Mono(value,new BigInteger("0"),false,null);
         Poly poly = new Poly();
         poly.addMono(mono);
         return poly;
