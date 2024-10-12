@@ -1,0 +1,3 @@
+class PathIsNotValid extends Exception {
+
+}

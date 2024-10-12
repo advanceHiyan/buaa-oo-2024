@@ -1,0 +1,2 @@
+class EdgeNotFoundException extends Exception {
+}
