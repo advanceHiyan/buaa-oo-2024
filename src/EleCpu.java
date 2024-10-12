@@ -1,4 +1,4 @@
-import com.oocourse.elevator1.PersonRequest;
+import com.oocourse.elevator2.PersonRequest;
 import java.util.ArrayList;
 
 public class EleCpu {
@@ -18,7 +18,7 @@ public class EleCpu {
         this.requestQueue = requestQueue;
     }
 
-    public void checkStop() {
+    public synchronized void checkStop() {
         outWantIns.clear();
         inWantOuts.clear();
         now = elevator.getNowFloor();
