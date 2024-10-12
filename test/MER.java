@@ -1,4 +1,4 @@
-import com.oocourse.spec1.exceptions.EqualRelationException;
+import com.oocourse.spec2.exceptions.EqualRelationException;
 
 import java.util.HashMap;
 

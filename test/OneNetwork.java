@@ -1,9 +1,14 @@
-import com.oocourse.spec1.exceptions.EqualPersonIdException;
-import com.oocourse.spec1.exceptions.EqualRelationException;
-import com.oocourse.spec1.exceptions.RelationNotFoundException;
-import com.oocourse.spec1.exceptions.PersonIdNotFoundException;
-import com.oocourse.spec1.main.Network;
-import com.oocourse.spec1.main.Person;
+import com.oocourse.spec2.exceptions.EqualRelationException;
+import com.oocourse.spec2.exceptions.EqualTagIdException;
+import com.oocourse.spec2.exceptions.EqualPersonIdException;
+import com.oocourse.spec2.exceptions.RelationNotFoundException;
+import com.oocourse.spec2.exceptions.AcquaintanceNotFoundException;
+import com.oocourse.spec2.exceptions.PathNotFoundException;
+import com.oocourse.spec2.exceptions.PersonIdNotFoundException;
+import com.oocourse.spec2.exceptions.TagIdNotFoundException;
+import com.oocourse.spec2.main.Network;
+import com.oocourse.spec2.main.Person;
+import com.oocourse.spec2.main.Tag;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,6 +18,7 @@ public class OneNetwork implements Network {
     private HashMap<Integer,Integer> toTreeEnd; //构造一个连通的树
     private int sumTriple;
     private int sumBlock;
+    private HashMap<Integer,Integer> mark = new HashMap<>();
 
     public OneNetwork() {
         this.persons = new HashMap<>();
@@ -73,17 +79,19 @@ public class OneNetwork implements Network {
     public void modifyRelation(int id1, int id2, int value) throws PersonIdNotFoundException,
             EqualPersonIdException, RelationNotFoundException {
         if (containsPerson(id1) && containsPerson(id2) && id1 != id2 &&
-                getPerson(id1).isLinked(getPerson(id2)) && getPerson(id1).
-                queryValue(getPerson(id2)) + value > 0) {
+                getPerson(id1).isLinked(getPerson(id2)) &&
+                (getPerson(id1).queryValue(getPerson(id2)) + value) > 0) {
             ((CopyPerson) getPerson(id1)).addPerValue(getPerson(id2),value);
             ((CopyPerson) getPerson(id2)).addPerValue(getPerson(id1),value);
         } else if (containsPerson(id1) && containsPerson(id2) && id1 != id2 &&
                 getPerson(id1).isLinked(getPerson(id2)) &&
-                getPerson(id1).queryValue(getPerson(id2)) + value <= 0) {
+                (getPerson(id1).queryValue(getPerson(id2)) + value) <= 0) {
             ((CopyPerson) getPerson(id1)).removeLink(getPerson(id2));
             ((CopyPerson) getPerson(id2)).removeLink(getPerson(id1));
             modifyTree(id1,id2);
             sumTriple -= findCommon(id1,id2);
+            ((CopyPerson) getPerson(id1)).modTagRemove(getPerson(id2));
+            ((CopyPerson) getPerson(id2)).modTagRemove(getPerson(id1));
         } else if (!containsPerson(id1) || !containsPerson(id2) || id1 == id2 ||
                 !getPerson(id1).isLinked(getPerson(id2))) {
             if (!containsPerson(id1)) {
@@ -135,6 +143,184 @@ public class OneNetwork implements Network {
     @Override
     public int queryTripleSum() {
         return sumTriple;
+    }
+
+    @Override
+    public void addTag(int personId, Tag tag) throws
+            PersonIdNotFoundException, EqualTagIdException {
+        if (containsPerson(personId) && !getPerson(personId).containsTag(tag.getId())) {
+            getPerson(personId).addTag(tag);
+        } else {
+            if (!containsPerson(personId)) {
+                throw new MP(personId);
+            } else {
+                throw new ETN(tag.getId());
+            }
+        }
+    }
+
+    @Override
+    public void addPersonToTag(int personId1, int personId2, int tagId) throws
+            PersonIdNotFoundException, RelationNotFoundException,
+            TagIdNotFoundException, EqualPersonIdException {
+        if (containsPerson(personId1) && containsPerson(personId2) && personId1 != personId2 &&
+                getPerson(personId2).isLinked(getPerson(personId1)) &&
+                getPerson(personId2).containsTag(tagId) &&
+                !getPerson(personId2).getTag(tagId).hasPerson(getPerson(personId1)) &&
+                ((CopyTag) getPerson(personId2).getTag(tagId)).getTagPersons().size() <= 1111) {
+            getPerson(personId2).getTag(tagId).addPerson(getPerson(personId1));
+        } else {
+            if (!containsPerson(personId1)) {
+                throw new MP(personId1);
+            } else if (!containsPerson(personId2)) {
+                throw new MP(personId2);
+            } else if (personId1 == personId2) {
+                throw new MEP(personId1);
+            } else if (!getPerson(personId2).isLinked(getPerson(personId1))) {
+                throw new MR(personId1,personId2);
+            } else if (!getPerson(personId2).containsTag(tagId)) {
+                throw new TNF(tagId);
+            } else if (getPerson(personId2).getTag(tagId).hasPerson(getPerson(personId1))) {
+                throw new MEP(personId1);
+            }
+        }
+    }
+
+    @Override
+    public int queryTagValueSum(int personId, int tagId) throws
+            PersonIdNotFoundException, TagIdNotFoundException {
+        if (containsPerson(personId) && getPerson(personId).containsTag(tagId)) {
+            return getPerson(personId).getTag(tagId).getValueSum();
+        } else {
+            if (!containsPerson(personId)) {
+                throw new MP(personId);
+            } else {
+                throw new TNF(tagId);
+            }
+        }
+    }
+
+    @Override
+    public int queryTagAgeVar(int personId, int tagId) throws
+            PersonIdNotFoundException, TagIdNotFoundException {
+        if (containsPerson(personId) && getPerson(personId).containsTag(tagId)) {
+            return getPerson(personId).getTag(tagId).getAgeVar();
+        } else {
+            if (!containsPerson(personId)) {
+                throw new MP(personId);
+            } else {
+                throw new TNF(tagId);
+            }
+        }
+    }
+
+    @Override
+    public void delPersonFromTag(int personId1, int personId2, int tagId) throws
+            PersonIdNotFoundException, TagIdNotFoundException {
+        if (containsPerson(personId1) && containsPerson(personId2) &&
+                getPerson(personId2).containsTag(tagId) &&
+                getPerson(personId2).getTag(tagId).hasPerson(getPerson(personId1))) {
+            getPerson(personId2).getTag(tagId).delPerson(getPerson(personId1));
+        } else {
+            if (!containsPerson(personId1)) {
+                throw new MP(personId1);
+            } else if (!containsPerson(personId2)) {
+                throw new MP(personId2);
+            } else if (!getPerson(personId2).containsTag(tagId)) {
+                throw new TNF(tagId);
+            } else {
+                throw new MP(personId1);
+            }
+        }
+    }
+
+    @Override
+    public void delTag(int personId, int tagId) throws
+            PersonIdNotFoundException, TagIdNotFoundException {
+        if (containsPerson(personId) && getPerson(personId).containsTag(tagId)) {
+            getPerson(personId).delTag(tagId);
+        } else {
+            if (!containsPerson(personId)) {
+                throw new MP(personId);
+            } else {
+                throw new TNF(tagId);
+            }
+        }
+    }
+
+    @Override
+    public int queryBestAcquaintance(int id) throws
+            PersonIdNotFoundException, AcquaintanceNotFoundException {
+        if (containsPerson(id) && ((CopyPerson) getPerson(id)).getAcquaintance().size() != 0) {
+            return ((CopyPerson) getPerson(id)).findBestID();
+        } else {
+            if (!containsPerson(id)) {
+                throw new MP(id);
+            } else {
+                throw new ACN(id);
+            }
+        }
+    }
+
+    @Override
+    public int queryCoupleSum() {
+        int ret = 0;
+        for (Integer ieKey:persons.keySet()) {
+            for (Integer jeKey:persons.keySet()) {
+                if (ieKey == jeKey) {
+                    break;
+                }
+                CopyPerson ieP = (CopyPerson) persons.get(ieKey);
+                CopyPerson jeP = (CopyPerson) persons.get(jeKey);
+                if (ieP.getAcquaintance().size() > 0 && ieP.findBestID() == jeKey &&
+                        jeP.getAcquaintance().size() > 0 && jeP.findBestID() == ieKey) {
+                    ret++;
+                }
+            }
+        }
+        return ret;
+    }
+
+    @Override
+    public int queryShortestPath(int id1, int id2) throws
+            PersonIdNotFoundException, PathNotFoundException {
+        if (containsPerson(id1) && containsPerson(id2) &&
+                (onlyGetEndPoint(id1) == onlyGetEndPoint(id2))) {
+            mark.clear();
+            if (id1 == id2) {
+                return 0;
+            }
+            ArrayList<Person> cnm = new ArrayList<>();
+            cnm.add(persons.get(id1));
+            mark.put(persons.get(id1).getId(),1);
+            return findNearPath(0,cnm,id2);
+        } else {
+            if (!containsPerson(id1)) {
+                throw new MP(id1);
+            } else if (!containsPerson(id2)) {
+                throw new MP(id2);
+            } else {
+                throw new PathNof(id1,id2);
+            }
+        }
+    }
+
+    public int findNearPath(int floor,ArrayList<Person> floorPoople,int id2) {
+        ArrayList<Person> newPeople = new ArrayList<>();
+        for (int i = 0;i < floorPoople.size();i++) {
+            for (int j = 0;j < ((CopyPerson) floorPoople.get(i)).getAcquaintance().size();j++) {
+                Person p = ((CopyPerson) floorPoople.get(i)).getAcquaintance().get(j);
+                if (p.getId() == id2) {
+                    return floor;
+                } else {
+                    if (mark.get(p.getId()) == null) {
+                        mark.put(p.getId(),1);
+                        newPeople.add(p);
+                    }
+                }
+            }
+        }
+        return findNearPath(floor + 1,newPeople,id2);
     }
 
     public int getEndPoint(int id) { //连通树
@@ -198,13 +384,5 @@ public class OneNetwork implements Network {
         return ret;
     }
 
-    public int getCopySize() {
-        return persons.size();
-    }
-
-    public HashMap<Integer,Person> getCopyPs() {
-        return persons;
-    }
-
-    public boolean strictEquals(Person person) { return true; }
+    public Person[] getPersons() { return null; }
 }

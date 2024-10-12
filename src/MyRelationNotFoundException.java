@@ -1,4 +1,4 @@
-import com.oocourse.spec1.exceptions.RelationNotFoundException;
+import com.oocourse.spec2.exceptions.RelationNotFoundException;
 
 import java.util.HashMap;
 

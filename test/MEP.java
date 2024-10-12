@@ -1,4 +1,4 @@
-import com.oocourse.spec1.exceptions.EqualPersonIdException;
+import com.oocourse.spec2.exceptions.EqualPersonIdException;
 
 import java.util.HashMap;
 
