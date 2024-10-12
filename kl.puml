@@ -1,8 +1,0 @@
-@startuml
-class Main {
-- {static} HashMap<Character,CustFun> sCs
-+ {static} void main(String[])
-}
-
-
-@enduml

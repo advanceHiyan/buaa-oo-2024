@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="code:jar">
+    <output-path>$PROJECT_DIR$/面向对象第二单元数据投喂包</output-path>
+    <root id="archive" name="oohomework_2024_22371169_hw_5.jar">
+      <element id="module-output" name="oohomework_2024_22371169_hw_5" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/面向对象第二单元第一次作业官方包/elevator1.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

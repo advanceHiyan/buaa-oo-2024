@@ -1,32 +1,23 @@
-import java.util.HashMap;
-import java.util.Scanner;
+import com.oocourse.elevator1.TimableOutput;
+import java.util.ArrayList;
 
-public class Main {
-    private static final HashMap<Character, CustFun> sCs = new HashMap<>();
+class Main {
+    public static void main(String[] args) throws Exception {
+        TimableOutput.initStartTimestamp();  // 初始化时间戳
 
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        int n = scanner.nextInt();
-        scanner.nextLine();
-        for (int i = 0; i < n; i++) {
-            String sc = scanner.nextLine();
-            CustFun cfun = new CustFun(sc);
-            sCs.put(sc.charAt(0), cfun);
+        RequestQueue waitQueue = new RequestQueue();
+
+        ArrayList<RequestQueue> elevatorQueues = new ArrayList<>();
+        for (int i = 1;i <= 6;i++) {
+            RequestQueue requestQueue = new RequestQueue();
+            elevatorQueues.add(requestQueue);
+            ElevatorThread elevatorThread = new ElevatorThread(requestQueue,i);
+            elevatorThread.start();
+            requestQueue.checkEle(elevatorThread);
         }
-        String expression = scanner.nextLine();
-
-        PrePro prepro = new PrePro(expression, sCs);
-        String preproed = prepro.getOutput();
-        Lexer lexer = new Lexer(preproed);
-
-        Parser parser = new Parser(lexer);
-
-        Expr expr = parser.parserExpr(false);
-
-        Poly anspoly = expr.toPoly();
-        FinPro fp = new FinPro(anspoly);
-        String anstr = fp.SimplifyToStr();
-
-        System.out.println(anstr);
+        ScheduleThread schedule = new ScheduleThread(waitQueue,elevatorQueues);
+        schedule.start();
+        InputThread inputThread = new InputThread(waitQueue);
+        inputThread.start();
     }
 }
