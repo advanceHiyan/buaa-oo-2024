@@ -1,4 +1,4 @@
-# exp4_1_public
+# exp4_2_public
 
 
 
@@ -15,14 +15,14 @@ Already a pro? Just edit this README.md and make it your own. Want to make it ea
 
 ```
 cd existing_repo
-git remote add origin http://gitlab.oo.buaa.edu.cn/2024_oo_public/experiment/exp4_1_public.git
+git remote add origin http://gitlab.oo.buaa.edu.cn/2024_oo_public/experiment/exp4_2_public.git
 git branch -M main
 git push -uf origin main
 ```
 
 ## Integrate with your tools
 
-- [ ] [Set up project integrations](http://gitlab.oo.buaa.edu.cn/2024_oo_public/experiment/exp4_1_public/-/settings/integrations)
+- [ ] [Set up project integrations](http://gitlab.oo.buaa.edu.cn/2024_oo_public/experiment/exp4_2_public/-/settings/integrations)
 
 ## Collaborate with your team
 

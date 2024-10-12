@@ -6,38 +6,49 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         TimableOutput.initStartTimestamp();
+        // 输入UpdateThread信息
         Scanner scanner = new Scanner(System.in);
-
-        ArrayList<Product> productList = new ArrayList<>();
-        int num = scanner.nextInt();
-        for (int x = 0; x < num; x++) {
-            Product product;
-            String p = scanner.next();
-            switch (p) {
-                case "A":
-                    product = new Product(Process.A, x);
-                    break;
-                case "B":
-                    product = new Product(Process.B, x);
-                    break;
-                case "C":
-                    product = new Product(Process.C, x);
-                    break;
-                default:
-                    product = new Product(Process.D, x);
-                    break;
-            }
-            productList.add(product);
+        int numInsertThread = scanner.nextInt();
+        ArrayList<String> updateOps = new ArrayList<>();
+        ArrayList<String> updateKeys = new ArrayList<>();
+        ArrayList<String> updateValues = new ArrayList<>();
+        for (int i = 0; i < numInsertThread; i++) {
+            String op = scanner.next();
+            updateOps.add(op);
+            String key = scanner.next();
+            updateKeys.add(key);
+            String value = scanner.next();
+            updateValues.add(value);
         }
-
-        ArrayList<Worker> workers = new ArrayList<>();
-        for (int x = 0; x < 4; x++) {
-            Worker worker = new Worker(x);
-            workers.add(worker);
-            worker.start();
+        
+        int numSelectThread = scanner.nextInt();
+        ArrayList<String> selectKeys = new ArrayList<>();
+        for (int i = 0; i < numSelectThread; i++) {
+            String key = scanner.next();
+            selectKeys.add(key);
         }
-
-        Pipeline pipeline = new Pipeline(workers, productList);
-        pipeline.start();
+    
+        Database<String, String> database = new Database<>();
+        
+        // 启动UpdateThread线程
+        for (int i = 0; i < numInsertThread; i++) {
+            new UpdateThread(database, updateOps.get(i), updateKeys.get(i), updateValues.get(i)).start();
+        }
+        
+        
+        // 启动SelectThread线程
+        for (int i = 0; i < numSelectThread; i++) {
+            new SelectThread(database, selectKeys.get(i)).start();
+        }
+        
+        // 停止约5秒
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        
+        // 强制终止
+        System.exit(0);
     }
 }
