@@ -1,11 +1,19 @@
 # buaa-oo-2024
-北航面向对象2024春季课设代码
-- hw1到hw3:第一单元：递归下降解析字符串
-- hw5到hw7:第二单元，多线程电梯系统（难点）
-- hw9到hw11:第三单元
-- hw13到hw15:第四单元
+这是北航计算机学院面向对象2024春季课设代码
+- 分支hw1到hw3:第一单元：递归下降解析字符串
+- 分支hw5到hw7:第二单元，多线程电梯系统（难点）
+- 分支hw9到hw11:第三单元，jml关系图
+- 分支hw13到hw15:第四单元，uml图书馆
+- 分支exp：课上实验代码
 
-# 第一单元总述
+# 目录
+- [第一单元递归下降] (第一单元)
+- [第二单元多线程电梯] (第二单元)
+- [第三单元jml图] (第三单元)
+- [第四单元uml图书馆] (第四单元)
+
+
+# 第一单元总述 {第一单元}
 第一单元三次作业都是对一行表达式进行去括号整理 。本人借鉴了课程组在公众号发布的代码，使用递归下降过程先将表达式解析为因子，再将因子链表解析为语法树，最后将语法树解析为由单项式组成的多项式。
 [源代码地址](https://github.com/advanceHiyan/buaa-oo-2024)
 ## 第一次作业总架构
@@ -97,7 +105,7 @@ exp也含有x，为了防止替换破坏exp，本人先把exp替换为j，并在
 ## 体会与未来展望
 OO真的是一门很难但是很有意思的课，看着自己的代码 一点一点形成一个工程真的很有成就感。同时本人也建议适当降低互测门槛，让更多的同学进入互测，并合理分配房间，让所有人都能体验到hack与被hack。
 
-# 第二单元综述
+# 第二单元综述 {第二单元}
 ## 总体架构分析
 [源代码地址](https://github.com/advanceHiyan/buaa-oo-2024)
 ### 架构图示意
@@ -331,3 +339,331 @@ Input收到DCreset后会立即向对应的RequestQueue发送信号，创造新�
 但是只要搞明白了
 **生产者——消费者模式**、**多个线程竞争的对象**还有**wait——notify原理**这三点，本人感觉比第一单元要简单。
 
+# 第三单元综述 {第三单元}
+
+## 测试过程
+[源代码地址](https://github.com/advanceHiyan/buaa-oo-2024)
+### 引言
+本单元是JML单元，相比前两次思维量少得多，是以博客内容也相应调整。
+### 黑箱测试与白箱测试
+
+- 黑箱测试：测试人员不需要了解软件内部的实现细节，只关注输入和输出之间的关系，通过给定的输入数据来验证软件的功能是否按照规格说明正常运行。优点是可以独立于编码人员进行，测试者可以从用户的角度出发，发现用户可能面临的问题。缺点是可能无法发现代码中的错误或逻辑缺陷，只能验证功能是否按照规格说明运行。
+- 白箱测试：测试人员需要了解软件的实现细节，通过检查代码逻辑、路径覆盖等来验证软件的正确性和健壮性。优点是可以发现代码中的错误、逻辑缺陷以及性能问题，对于提高代码质量有很大的帮助。缺点是测试相对复杂，需要测试人员了解程序逻辑。
+
+### 单元、功能、集成、压力、回归测试
+
+1. **单元测试**
+- 单元测试是针对软件中最小的可测试单元进行的测试，通常是对独立的函数、方法或模块进行测试。
+- 单元测试的目的是验证代码的正确性，确保每个单元按照预期工作。
+- 单元测试通常由开发人员在编写代码时进行，可以快速定位和修复问题，促进代码质量的提高。
+
+2. **功能测试**
+- 功能测试是针对软件的功能需求进行的测试，验证软件是否按照规格说明和用户需求正常运行。
+- 功能测试关注软件的输入和输出，测试人员通过输入各种数据和情况来验证软件的功能是否正确。
+- 功能测试通常由专门的测试团队进行，在软件开发周期的后期进行。
+
+3. **集成测试**
+- 集成测试是将已经经过单元测试的模块或组件进行组合，并验证它们在一起工作的测试。
+- 集成测试的目标是验证不同模块之间的接口和交互是否正确，以及整体系统是否符合预期。
+- 集成测试通常在功能测试之前进行，可以发现模块之间的集成问题和依赖关系的错误。
+
+4. **压力测试**
+- 压力测试是为了评估软件在负载、并发和异常条件下的稳定性和性能而进行的测试。
+- 压力测试通过模拟大量用户、高并发访问等情况来测试系统的极限能力和承受能力。
+- 压力测试可以帮助发现系统资源不足、性能瓶颈或内存泄漏等问题，以优化系统的性能。
+
+5. **回归测试**
+- 回归测试是在对软件进行更改或修复之后，重新执行旧的测试用例以确保新的更改没有引入新的错误。
+- 回归测试的目的是验证软件的修改不会破坏原有的功能和逻辑。
+- 回归测试可以避免因为修改引入新的问题，保持软件的稳定性和可靠性。
+
+### 数据构造策略
+
+1. 随机测试：通过大量的随机数据来提高覆盖率，最大程度发现程序潜在的问题
+2. 边界测试：对于随机数据难以覆盖的极端情况与特殊情况，需要额外构造特殊的数据点进行测试
+3. 模拟数据：假如推测出程序潜在的问题或者随机测试发现问题，可以以问题为导向，由果溯因，构造数据量小、但是对等错误的数据
+4. 分类测试：可以根据程序不同的功能、使用情景，构造不同的样例分别测试
+
+## 架构设计
+### 基础架构
+完全按照JML要求的架构
+### isCircle维护
+建立连通树
+```
+// MyNetwork 伪代码
+private HashMap<Integer,Integer> toTreeEnd; //构造一个连通的树
+public void addPerson()：
+    toTreeEnd.put(person.getId(),null)
+
+public void addRelation()：
+    if (！(getEndPoint(id1) == getEndPoint(id2)))：
+        toTreeEnd.put(getEndPoint(id1),getEndPoint(id2))
+
+public int getEndPoint(int id)：
+    while (toTreeEnd.get(end) != null) ：
+         end = toTreeEnd.get(end)
+```
+
+### BlockSum维护
+```
+// MyNetwork 伪代码
+public void addPerson()：
+    sumBlock++
+
+public void addRelation()：
+    if (！(getEndPoint(id1) == getEndPoint(id2)))：
+        sumBlock--
+
+//当需要删除关系时，进行深度优先搜索
+```
+
+### TripleSum维护
+```
+// MyNetwork 伪代码
+public void addRelation()：
+   sumTriple += findCommon(id1,id2)
+
+public void removeRelation()：
+   sumTriple -= findCommon(id1,id2)
+
+public int findCommon(int id1,int id2):
+    return sum: person that link id1 && link id2
+
+```
+
+### 最短路径问题
+广度优先搜索
+
+### BestAcquaintance与CoupleSum
+```
+//MyPerson
+private long bestID = Long.MAX_VALUE;
+private long maxVa = Long.MIN_VALUE;
+ public void buildLink(Person person, int value) {
+        ……
+        if (value > maxVa) {
+            maxVa = value;
+            bestID = person.getId();
+        } else if (value == maxVa && person.getId() < bestID) {
+            bestID = person.getId();
+        }
+    }
+
+    public void removeLink(Person person) {
+        ……
+        if (person.getId() == bestID) {
+            maxVa = Long.MIN_VALUE;
+            bestID = Long.MAX_VALUE;
+            if (acquaintance.size() != 0) {
+                for (Integer key:acquaintance.keySet()) {
+                    Person p = acquaintance.get(key);
+                    if (maxVa < value.get(p)) {
+                        maxVa = value.get(p);
+                        bestID = key;
+                    } else if (maxVa == value.get(p) && acquaintance.get(key).getId() < bestID) {
+                        bestID = acquaintance.get(key).getId();
+                    }
+                }
+            }
+        }
+    }
+
+    public void addPerValue(Person person,int va) {
+          //参考上面两个，注意va可能是负数
+    }
+//MyNetwork
+    public int queryCoupleSum() {
+        int ret = 0;
+        if (persons.size() == 0) {
+            return 0; }
+        for (Integer ieKey:persons.keySet()) {
+            MyPerson ieP = (MyPerson) persons.get(ieKey);
+            if (ieP.getAcquaintance().size() != 0) {
+                int j = ieP.findBestID();
+                MyPerson jeP = ((MyPerson) persons.get(j));
+                if (jeP.getAcquaintance().size() != 0) {
+                    if (jeP.findBestID() == ieKey) { ret++; } } } }
+        ret /= 2;
+        return ret; }
+```
+
+### qtvs指令处理
+本人在这一个点ctle后，使用了两个方法:
+一个是**设置脏位**，来表示qtvs的上一次结果有没有可能被修改，如果没有变化，则直接返回上一次的结果.
+否则进行遍历。而遍历方式也要修改：
+jml要求
+```
+    //Tag 
+    /*@ ensures \result == (\sum int i; 0 <= i && i < persons.length; 
+      @          (\sum int j; 0 <= j && j < persons.length && 
+      @           persons[i].isLinked(persons[j]); persons[i].queryValue(persons[j])));
+      @*/
+    public /*@ pure @*/ int getValueSum();
+```
+原来的遍历，好像和JML一模一样，emmmmmmm，不是JML让这么写的吗（气）
+```
+for (Integer ieKey:persons.keySet()):
+    for (Integer jeKey:persons.keySet()):
+        if (persons.get(jeKey).isLinked(persons.get(jekey))):
+```
+现在的遍历
+```
+for (Integer ieKey:persons.keySet()) :
+     for (Integer jeKey:((MyPerson) persons.get(ieKey)).getAcquaintance().keySet()) :
+         if (persons.get(jeKey) != null) :
+```
+
+## 性能与规格实现
+想要保证性能，就不能照搬JML，而是要在满足JML规格的情况下进行性能的优化。也就是规格与实现结果相同，过程不同。
+## Junit测试方法
+本单元中测强制要求进行单元测试，这也让我第一次详细了解了这一测试方法，感觉收益颇多。
+前两次作业，本人都是构建一个复杂的图，然后调用需要测试的方法，然后对方法结果和其它变量是否被修改进行测试。
+```
+//public class MyNetworkTest 
+    public MyNetwork myNetwork = null;//课程组的实现，调用测试方法，对照组
+    private OneNetwork oneNetwork = null;//本人的实现，调用测试方法，检测方法结果正确性
+    private MyNetwork yingZi = null;//课程组的实现，不调用测试方法，检测方法是否对不允许修改的变量进行修改
+
+    public void AssErt() throws PersonIdNotFoundException, RelationNotFoundException {
+        Person [] olds = yingZi.getPersons();
+        assertEquals(myNetwork.queryCoupleSum(),oneNetwork.queryCoupleSum());
+        Person [] news = myNetwork.getPersons();
+        assertEquals(olds.length,news.length);
+        for (int i = 0;i < olds.length;i++) {
+            boolean f = ((MyPerson) olds[i]).strictEquals(news[i]);
+            assertEquals(f,true);
+        }
+    }
+```
+## 学习体会
+一开始在思考第三单元**是否有存在的必要**，更何况**五一期间还有作业**，等写完了就没有再思考这个问题了。
+这一单元相比前两个思维量比较小，大多数代码是翻译JML，但是翻译的时候也出现了许多问题，一个是没有及时更新JML，导致我有一个bug找了很久都没找到错误，后来才知道有个JML要修改，其次是翻译不是照搬，需要有自己的规格实现。
+
+# 第四单元综述 {第四单元}
+
+## 引言
+[源代码地址](https://github.com/advanceHiyan/buaa-oo-2024)
+面向对象设计与构造这门课终于是要结束了。真是一门让人难忘的课程啊，有太多太多的感想……
+
+## 正向建模
+
+正向建模是程序设计的重要方法，顾名思义，它是正向的（自顶而下），需要我们程序员先设计好顶层架构再一步步实现。
+
+### 顶层正向设计
+
+第四单元需要我们实现一个小型图书馆（非多线程）大致要求如下
+```
+在一所小型图书馆中，用户借阅图书需要遵守一定的规章制度。我们需要你模拟一个小型的图书管理系统，完成图书馆所支持的相关业务。
+
+图书馆里的所有图书按照 “类别号-序列号” 的形式编制书号（同学们可以理解为 ISBN 国际标准书号的简化形式，即一本书的书号是唯一的，它的所有副本的书号都是相同的）。图书分 A 、B 、C 三类，每种类别可能包含多个图书，每个图书可能具有多个副本（具有相同书号的两本书籍是同质的）。对于不同类别的书，有不同的借阅数量限制。
+
+图书馆的运行分为两个时段：白天开馆，夜晚闭馆。开馆后，图书管理系统需要处理用户的各种请求，依据图书馆的运行规则决定是否批准用户的请求；同时，开馆时和闭馆时，图书馆内部依据需要整理各部门的图书，以满足接下来可能处理的各种请求。
+
+在本次作业中，开馆时图书管理系统需要处理的请求包括：借书、还书、查询、预约和预约取书。
+
+本次作业中，我们规定书籍仅可以存在于如下四个位置：书架、预约处、借还处和用户。
+```
+根据题目要求，我设计了
+```
+    public Library(HashMap<LibraryBookId,Integer> inva) {
+        this.bookShelf = new BookShelf(inva);//书架
+        this.appOffice = new AppOffice();//预约处
+        this.broReOffice = new BroReOffice();//借还台
+        this.frontDesk = new StudReqProcess(this);//前台，自己加的，负责处理学生需求
+        this.needToDo = new HashMap<>();//前台发来的整理要求
+        this.waitPrints = new ArrayList<>();//输出序列
+        this.driftCorner = new DriftCorner();//漂流角hw14
+        this.broCorner = new BroCorner();//漂流角的借还台，自己加的
+    }
+```
+最大的创新就是加了前台吧，前台处理学生请求，并且记录学生的信息，有些请求前台可以完全独立处理，处理不了的再摇其它部门。
+
+### 底层正向设计
+
+图书设计
+```
+    public BookOfPer(LibraryBookId bookId,LocalDate localDate) { // for book of per
+        this.bookId = bookId;
+        this.type = bookId.getType();
+        this.uid = bookId.getUid();
+        this.startInApp = null;
+        this.startOwner = localDate;
+        if (bookId.isTypeB()) {
+            canOwnTime = 30;
+        } else if (bookId.isTypeC()) {
+            canOwnTime = 60;
+        } else if (bookId.isTypeBU()) {
+            canOwnTime = 7;
+        } else if (bookId.isTypeCU()) {
+            canOwnTime = 14;
+        } else {
+            System.out.println("Error: Book type not supported");
+        }
+    }
+
+    public BookOfPer(LibraryBookId bookId) { // for corner
+        this.bookId = bookId;
+        this.type = bookId.getType();
+        this.uid = bookId.getUid();
+        this.startInApp = null;
+        this.startOwner = null;
+        this.canOwnTime = 0;
+    }
+
+    public BookOfPer(LibraryBookId bookId,LocalDate localDate,boolean isOpen) { //for app
+        this.bookId = bookId;
+        this.type = bookId.getType();
+        this.uid = bookId.getUid();
+        this.startOwner = null;
+        this.canOwnTime = 0;
+        if (isOpen) {
+            this.startInApp = localDate.minusDays(1);
+        } else {
+            this.startInApp = localDate;
+        }
+    }
+```
+
+漂流角图书
+```
+public class CornerBook extends BookOfPer {
+    private int lentCount;
+
+    public CornerBook(LibraryBookId bookId,LocalDate localDate,int lentCount) {
+        super(bookId,localDate);
+        this.lentCount = lentCount;
+    }
+```
+
+官方包的LibraryBookId设定的非常好，尤其是重写了哈希值，可以自由的创建实例。但是这还是有不足，因此我新建了Book类。
+
+## 架构设计
+
+### hw13架构设计
+
+![在这里插入图片描述](https://i-blog.csdnimg.cn/blog_migrate/bbd375d451dd1c41f2d624058a6f69e9.png)
+
+### hw14-15架构设计
+
+![在这里插入图片描述](https://i-blog.csdnimg.cn/blog_migrate/098eaaef0a9d7c2959f3c9c105f6e95a.png)
+## 架构演进
+
+第一单元递归下降架构，第二单元多线程生产者-消费者架构，第三单元jml架构，第四单元简单图书馆架构。
+
+## 测试演进
+
+主要是通过大佬的评测机
+[大佬的评测机](https://github.com/DPOOJ/dpooj)
+
+还有就是print
+还有test
+
+## 课程收获
+
+学到了许多新知识，尤其是Java面向对象的知识，这也让我对别的语言有了更多的了解。
+
+尤其是第二单元多线程学到了很多，还跟操作系统联系起来了哈。
+
+就这些吧。
+
+**OO**终于还是**结束**了
